@@ -1,4 +1,4 @@
-#' Title
+#' Helper function to return $L_{n, c}$
 #'
 #' @param Y A vector of transformed values
 #' @param n The number describing the kind of local minimum to return; n=1

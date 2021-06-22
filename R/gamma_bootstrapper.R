@@ -23,23 +23,6 @@
 #' gamma_function <- gamma_bootstrapper(10)
 #' ## Evaluate it in a number, say .2
 #' gamma_function(.2)
-
-# gamma_bootstrapper <- function(Z, m, n = Inf, B = 1e3, log.p = T, mc.cores = 1L) {
-#   if (Z == 0) return(0)
-#   forCDF <- parallel::mclapply (  # pbmcapply::pbmclapply (
-#     1:B,
-#     function (i) {
-#       pvals <- runif(m) %>% sort
-#       Y <- pbeta(pvals, 1:m, m + 1 - 1:m, log.p = log.p)
-#
-#       Y[.GetMinima(Y, n)]
-#     },
-#     mc.cores = mc.cores
-#   )
-#
-#   mean(forCDF <= Z)
-# }
-
 gamma_bootstrapper <- function (
   m,
   n = Inf,
@@ -63,7 +46,7 @@ gamma_bootstrapper <- function (
     forCDF <- parallel::mclapply (
       1:B,
       function (i) {
-        pvals <- sort(runif(m))
+        pvals <- sort(stats::runif(m))
         # Y <- pbeta(pvals, 1:m, m + 1 - 1:m, log.p = log.p)
         Y <- make_Y(pvals, tau = tau, K = K, log.p = log.p)
 

@@ -8,6 +8,9 @@
 #' @param gamma Function; function to be used as the gamma approximation. If NULL, then
 #' the gamma function will be bootstrapped assuming independence. Defaults
 #' to NULL
+#' @param m_max Integer; the highest number of test for which the analytical
+#' computation of the TMTI CDF is used. When m is above m_max it will be
+#' bootstrapped or user supplied instead.
 #' @param log.p Logical; indicating whether to compute Y's on log-scale.
 #' Defaults to TRUE
 #' @param B Numeric; number of bootstrap replicates to be used when estimating

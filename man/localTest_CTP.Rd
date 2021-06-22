@@ -4,7 +4,7 @@
 \alias{localTest_CTP}
 \title{A Closed Testing Procedure for any local test using an O(n^2) shortcut.}
 \usage{
-localTest_CTP(localTest, pvals, alpha = 0.05, earlyStop = T, verbose = T, ...)
+localTest_CTP(localTest, pvals, alpha = 0.05, ...)
 }
 \arguments{
 \item{localTest}{A function which defines the choice of local test to use.}
@@ -13,21 +13,11 @@ localTest_CTP(localTest, pvals, alpha = 0.05, earlyStop = T, verbose = T, ...)
 
 \item{alpha}{Level to perform each intersection test at. Defaults to 0.05}
 
-\item{earlyStop}{Logical, indicating whether to stop the search early,
-i.e. as soon as the marginal hypothesis can not be rejected. Defaults to
-TRUE}
-
-\item{verbose}{Logical, indicating whether or not to display progress.
-Defaults to true}
-
 \item{...}{Additional arguments}
 }
 \value{
-A tibble containing:
-* i: The sorted index of each p-value.
+A data.frame containing:
 * p_adjust: The CTP adjusted p-value, controlling the FWER strongly.
-* FirstAccept: The first level of the test tree at which the hypothesis could
-not be rejected. NA if it is never rejected.
 * Index: The original index of the unsorted p-value inputs.
 }
 \description{

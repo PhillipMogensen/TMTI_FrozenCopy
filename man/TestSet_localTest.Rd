@@ -15,6 +15,8 @@ TestSet_localTest(
 )
 }
 \arguments{
+\item{localTest}{Function which defines a combination test.}
+
 \item{pvals}{Numeric vector of p-values}
 
 \item{subset}{Numeric vector; the subset to be tested}
@@ -29,16 +31,6 @@ lower bounds on the p-values for the global test.}
 \item{verbose}{Logical; set to TRUE to print progress.}
 
 \item{...}{Additional arguments to be passed onto TMTI()}
-
-\item{tau}{Numeric; the treshhold to use if using rTMTI. Set to NULL for TMTI
-or rtTMTI. Defaults to NULL}
-
-\item{K}{Integer; The number of p-values to use if using rtTMTI. Set to NULL
-for TMTI or tTMTI. Defaults to NULL.}
-
-\item{gammalist}{List of functions. Must be such that the i'th element
-is the gamma function for sets of size i. Set to NULL to bootstrap the
-functions assuming independence. Defaults to NULL.}
 }
 \value{
 The adjusted p-value for the test of the hypothesis that there are

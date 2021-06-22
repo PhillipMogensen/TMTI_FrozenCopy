@@ -12,6 +12,7 @@ TMTI(
   gamma = NULL,
   log.p = TRUE,
   B = 1000,
+  m_max = 100,
   ...
 )
 }
@@ -35,6 +36,10 @@ Defaults to TRUE}
 \item{B}{Numeric; number of bootstrap replicates to be used when estimating
 the gamma function. If a gamma is supplied, this argument is ignored.
 Defaults to 1e3.}
+
+\item{m_max}{Integer; the highest number of test for which the analytical
+computation of the TMTI CDF is used. When m is above m_max it will be
+bootstrapped or user supplied instead.}
 
 \item{...}{Additional parameters}
 }

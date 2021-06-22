@@ -2,7 +2,7 @@
 % Please edit documentation in R/TMTI_CDF.R
 \name{TMTI_CDF}
 \alias{TMTI_CDF}
-\title{Computes the analytical version of the TMTI_\infty CDF. When m>100, this should
+\title{Computes the analytical version of the TMTI_infty CDF. When m>100, this should
 not be used.}
 \usage{
 TMTI_CDF(x, m)
@@ -13,10 +13,11 @@ TMTI_CDF(x, m)
 \item{m}{Number of independent tests to combine}
 }
 \value{
-
+The probability that the test statistic is at most x assuming
+independence under the global null hypothesis.
 }
 \description{
-Computes the analytical version of the TMTI_\infty CDF. When m>100, this should
+Computes the analytical version of the TMTI_infty CDF. When m>100, this should
 not be used.
 }
 \examples{

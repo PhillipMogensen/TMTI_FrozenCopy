@@ -59,18 +59,10 @@
 #' @param localTest A function which defines the choice of local test to use.
 #' @param pvals A vector of p-values
 #' @param alpha Level to perform each intersection test at. Defaults to 0.05
-#' @param earlyStop Logical, indicating whether to stop the search early,
-#' i.e. as soon as the marginal hypothesis can not be rejected. Defaults to
-#' TRUE
-#' @param verbose Logical, indicating whether or not to display progress.
-#' Defaults to true
 #' @param ... Additional arguments
 #'
-#' @return A tibble containing:
-#' * i: The sorted index of each p-value.
+#' @return A data.frame containing:
 #' * p_adjust: The CTP adjusted p-value, controlling the FWER strongly.
-#' * FirstAccept: The first level of the test tree at which the hypothesis could
-#' not be rejected. NA if it is never rejected.
 #' * Index: The original index of the unsorted p-value inputs.
 #' @export TMTI_CTP
 #'
@@ -85,45 +77,81 @@
 
 localTest_CTP <- function (
   localTest, pvals, alpha = 0.05,
-  earlyStop = T, verbose = T,
   ...
 ) {
   ord <- order(pvals)
-  pvals <- sort(pvals)
+  p2  <- pvals
+  p   <- sort(pvals)
+  m   <- length(pvals)
 
-  m <- length(pvals)
+  Q <- matrix(0, m, m)
 
-  out <- list()
+  Q[m, m] <- p[m]
+  for (i in 1:(m - 1)) {
+    counter <- m
 
-  for (i in 1:m) {
-    if (verbose)
-      cat("\rStep", i)
-    CTP_i <- as.data.frame(
-      .localTest_OneTest (
-        localTest = localTest,
-        k = i,
-        pvals = pvals,
-        maxStep = m - i + 1,
-        alpha = alpha,
-        earlyStop = earlyStop,
-        ...
-      )
-    )
-    out[[i]] <- c (
-      "i" = i,
-      "p_adjust" = max(CTP_i$p),
-      "FirstAccept" = ifelse (
-        sum(CTP_i$reject == 0) >= 1,
-        min(CTP_i$i[CTP_i$reject == 0]),
-        NA
-      )
-    )
+    Q[counter, i] <- p[i]
+
+    for (j in m:(i + 1)) {
+      counter <- counter - 1
+
+      subp <- p[c(i, m:j)]
+      m2   <- length(subp)
+
+      Q[counter, i] <- localTest(subp)
+    }
   }
+  for (i in 1:(m - 1)) {
+    Q[i, (i + 1):m] <- diag(Q)[i]
+  }
+  adjusted_p <- apply(Q, 2, max)
 
-  out <- as.data.frame(do.call("rbind", out))
-  out$Index <- ord
-
-  return (
-    out
+  data.frame (
+    "p_adjusted" = adjusted_p,
+    "index"      = ord
   )
 }
+# localTest_CTP <- function (
+#   localTest, pvals, alpha = 0.05,
+#   earlyStop = T, verbose = T,
+#   ...
+# ) {
+#   ord <- order(pvals)
+#   pvals <- sort(pvals)
+#
+#   m <- length(pvals)
+#
+#   out <- list()
+#
+#   for (i in 1:m) {
+#     if (verbose)
+#       cat("\rStep", i)
+#     CTP_i <- as.data.frame(
+#       .localTest_OneTest (
+#         localTest = localTest,
+#         k = i,
+#         pvals = pvals,
+#         maxStep = m - i + 1,
+#         alpha = alpha,
+#         earlyStop = earlyStop,
+#         ...
+#       )
+#     )
+#     out[[i]] <- c (
+#       "i" = i,
+#       "p_adjust" = max(CTP_i$p),
+#       "FirstAccept" = ifelse (
+#         sum(CTP_i$reject == 0) >= 1,
+#         min(CTP_i$i[CTP_i$reject == 0]),
+#         NA
+#       )
+#     )
+#   }
+#
+#   out <- as.data.frame(do.call("rbind", out))
+#   out$Index <- ord
+#
+#   return (
+#     out
+#   )
+# }

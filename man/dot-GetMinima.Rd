@@ -2,7 +2,7 @@
 % Please edit documentation in R/GetMinima.R
 \name{.GetMinima}
 \alias{.GetMinima}
-\title{Title}
+\title{Helper function to return $L_{n, c}$}
 \usage{
 .GetMinima(Y, n)
 }
@@ -16,7 +16,7 @@ returns the first local minimum, n=Inf returns the global minimum.}
 The index of the n'th local minimum
 }
 \description{
-Title
+Helper function to return $L_{n, c}$
 }
 \examples{
 ## Simulate some p-values

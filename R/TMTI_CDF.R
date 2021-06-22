@@ -1,10 +1,11 @@
-#' Computes the analytical version of the TMTI_\infty CDF. When m>100, this should
+#' Computes the analytical version of the TMTI_infty CDF. When m>100, this should
 #' not be used.
 #'
 #' @param x Point in which to evaluate the CDF
 #' @param m Number of independent tests to combine
 #'
-#' @return
+#' @return The probability that the test statistic is at most x assuming
+#' independence under the global null hypothesis.
 #' @export
 #'
 #' @examples
@@ -16,7 +17,7 @@ TMTI_CDF <- function (x, m) { ## This is the explicit form of gamma
     sum(1 / factorial(m:1) * x^(m:1) * a)
   }
 
-  xs <- qbeta(x, 1:m, m + 1 - 1:m)
+  xs <- stats::qbeta(x, 1:m, m + 1 - 1:m)
 
   PP <- list()
   PP[1] <- xs[1]

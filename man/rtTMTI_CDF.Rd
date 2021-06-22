@@ -2,7 +2,7 @@
 % Please edit documentation in R/rtTMTI_CDF.R
 \name{rtTMTI_CDF}
 \alias{rtTMTI_CDF}
-\title{Computes the analytical version of the rtMTI_\infty CDF. When m>100, this should
+\title{Computes the analytical version of the rtMTI_infty CDF. When m>100, this should
 not be used.}
 \usage{
 rtTMTI_CDF(x, m, K)
@@ -11,12 +11,15 @@ rtTMTI_CDF(x, m, K)
 \item{x}{Point in which to evaluate the CDF}
 
 \item{m}{Number of independent tests to combine}
+
+\item{K}{Integer; the truncation point to use.}
 }
 \value{
-
+The probability that the test statistic is at most x assuming
+independence under the global null hypothesis.
 }
 \description{
-Computes the analytical version of the rtMTI_\infty CDF. When m>100, this should
+Computes the analytical version of the rtMTI_infty CDF. When m>100, this should
 not be used.
 }
 \examples{

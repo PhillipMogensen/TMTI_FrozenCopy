@@ -64,14 +64,9 @@
 #'
 #' @param pvals A vector of p-values
 #' @param alpha Level to perform each intersection test at. Defaults to 0.05
-#' @param B Number of bootstrap replications when approximating gamma. Not
-#' relevant if specifying a list of functions using the gammaList argument.
-#' Defaults to 1000
-#' @param earlyStop Logical, indicating whether to stop the search early,
-#' i.e. as soon as the marginal hypothesis can not be rejected. Defaults to
-#' TRUE
-#' @param verbose Logical, indicating whether or not to display progress.
-#' Defaults to true
+#' @param B Number of bootstrap replications if gamma needs to be approximated.
+#' Not used if specifying a list of functions using the gammaList argument
+#' or if length(pvals) <= 100. Defaults to 1000
 #' @param gammaList A list of pre-specified gamma functions. If NULL, gamma
 #' functions will be approximated via bootstrap, assuming independence. Defaults
 #' to NULL.
@@ -83,7 +78,7 @@
 #' then either TMTI (default) or tTMTI is used.
 #' @param ... Additional arguments
 #'
-#' @return A tibble containing:
+#' @return A data.frame containing:
 #' * i: The sorted index of each p-value.
 #' * p_adjust: The CTP adjusted p-value, controlling the FWER strongly.
 #' * FirstAccept: The first level of the test tree at which the hypothesis could
@@ -100,53 +95,54 @@
 #' )
 #' TMTI_CTP(pvals, earlyStop = TRUE)
 
+
 TMTI_CTP <- function (
   pvals, alpha = 0.05, B = 1e3,
-  earlyStop = T, verbose = T,
   gammaList = NULL,
   log.p = TRUE,
   tau = NULL, K = NULL,
   ...
 ) {
   ord <- order(pvals)
-  pvals <- sort(pvals)
+  p2  <- pvals
+  p   <- sort(pvals)
+  m   <- length(pvals)
 
-  m <- length(pvals)
-
-  out <- list()
-
-  for (i in 1:m) {
-    if (verbose)
-      cat("\rStep", i)
-    CTP_i <- as.data.frame(
-      .TMTI_OneTest (
-        k = i,
-        pvals = pvals,
-        maxStep = m - i + 1,
-        alpha = alpha,
-        B = B,
-        earlyStop = earlyStop,
-        gammaList = gammaList,
-        log.p = log.p,
-        tau = tau, K = K,
-        ...
-      )
-    )
-    out[[i]] <- c (
-      "i" = i,
-      "p_adjust" = max(CTP_i$p),
-      "FirstAccept" = ifelse (
-        sum(CTP_i$reject == 0) >= 1,
-        min(CTP_i$i[CTP_i$reject == 0]),
-        NA
-      )
-    )
+  if (!is.null(K)) {
+    if (length(K) < length(pvals))
+      K <- rep(K, length.out = length(pvals))
   }
 
-  out <- as.data.frame(do.call("rbind", out))
-  out$Index <- ord
+  Q <- matrix(0, m, m)
 
-  return (
-    out
+  Q[m, m] <- p[m]
+  for (i in 1:(m - 1)) {
+    counter <- m
+
+    Q[counter, i] <- p[i]
+
+    for (j in m:(i + 1)) {
+      counter <- counter - 1
+
+      subp <- p[c(i, m:j)]
+      m2   <- length(subp)
+
+      Q[counter, i] <- TMTI (
+        pvals = subp,
+        tau   = tau,
+        K     = K[m2],
+        log.p = log.p,
+        gamma = gammaList[[m2]]
+      )
+    }
+  }
+  for (i in 1:(m - 1)) {
+    Q[i, (i + 1):m] <- diag(Q)[i]
+  }
+  adjusted_p <- apply(Q, 2, max)
+
+  data.frame (
+    "p_adjusted" = adjusted_p,
+    "index"      = ord
   )
 }

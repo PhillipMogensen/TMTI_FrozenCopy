@@ -38,7 +38,7 @@ make_Y <- function (
   else
     p_subset <- 1:m
 
-  pbeta (
+  stats::pbeta (
     sort(pvals),
     1:m,
     m + 1 - 1:m,
