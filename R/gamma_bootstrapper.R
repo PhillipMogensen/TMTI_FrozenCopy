@@ -56,7 +56,7 @@ gamma_bootstrapper <- function (
     )
 
     return (
-      function (x) mean(forCDF < x)
+      function (x) mean(forCDF < x, na.rm = T)
     )
   }
 }

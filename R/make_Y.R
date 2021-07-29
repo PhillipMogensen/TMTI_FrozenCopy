@@ -28,10 +28,10 @@ make_Y <- function (
   if (!is.null(tau) & !is.null(K))
     stop("Only one of the arguments tau and K can be different from NULL")
   else if (!is.null(tau)) {
-    p_subset <- which(pvals < tau)
+    p_subset <- 1:sum(pvals < tau)
     if (identical(p_subset, numeric(0))) {
-      warning("There are no p-values below tau, returning NULL")
-      return (NULL)
+      warning("There are no p-values below tau, using the smallest p-value instead")
+      p_subset <- 1
     }
   } else if (!is.null(K))
     p_subset <- 1:K

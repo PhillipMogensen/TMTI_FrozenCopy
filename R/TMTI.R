@@ -50,11 +50,15 @@ TMTI <- function (
   Z <- Y[.GetMinima(Y, n)]
 
   if (m <= m_max & log.p) {
-    if (is.null(K)) gamma <- function (x) TMTI_CDF(exp(x), m)
-    else gamma <- function (x) rtTMTI_CDF(exp(x), m, K)
+    if (!is.null(K) & !is.null(tau)) stop("Please supply only one of tau and K")
+    else if (!is.null(K)) gamma <- function (x) rtTMTI_CDF(exp(x), m, K)
+    else if (!is.null(tau)) gamma <- function (x) tTMTI_CDF(exp(x), m, tau)
+    else gamma <- function (x) TMTI_CDF(exp(x), m)
   } else if (m <= 100 & !log.p) {
-    if (is.null(K)) gamma <- function (x) TMTI_CDF(x, m)
-    else gamma <- function (x) rtTMTI_CDF(x, m, K)
+    if (!is.null(K) & !is.null(tau)) stop("Please supply only one of tau and K")
+    else if (!is.null(K)) gamma <- function (x) rtTMTI_CDF(x, m, K)
+    else if (!is.null(tau)) gamma <- function (x) tTMTI_CDF(x, m, tau)
+    else gamma <- function (x) TMTI_CDF(x, m)
   } else if(is.null(gamma)) {
     gamma <- gamma_bootstrapper(m, log.p = log.p, B = B, tau = tau, K = K, ...)
     # gamma_bootstrapper(Z = Z, m = m, n = n, log.p = log.p, ...)
