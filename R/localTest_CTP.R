@@ -64,7 +64,7 @@
 #' @return A data.frame containing:
 #' * p_adjust: The CTP adjusted p-value, controlling the FWER strongly.
 #' * Index: The original index of the unsorted p-value inputs.
-#' @export TMTI_CTP
+#' @export localTest_CTP
 #'
 #' @examples
 #' ## Simulate some p-values
