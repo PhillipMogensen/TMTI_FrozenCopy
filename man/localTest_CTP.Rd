@@ -30,5 +30,6 @@ pvals <- c (
   rbeta(10, 1, 20),  ## Mean value of .05
   runif(10)
 )
-TMTI_CTP(pvals, earlyStop = TRUE)
+## Perform the CTP using a local Bonferroni test
+localTest_CTP(function(x) {min(c(length(x) * min(x), 1))}, pvals)
 }

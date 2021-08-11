@@ -1,4 +1,4 @@
-#' Bootstrap the gamma functions
+#' Function to bootstrap TMTI CDFs
 #'
 #' @param m Number of tests
 #' @param n Number (or Inf) indicating what kind of minimum to consider.

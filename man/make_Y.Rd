@@ -2,7 +2,7 @@
 % Please edit documentation in R/make_Y.R
 \name{make_Y}
 \alias{make_Y}
-\title{Returns the transformed p-values to be used in the TMTI, tTMTI or rtTMTI}
+\title{Returns the transformed p-values to be used in the TMTI, tTMTI or rtTMTI. Internal function.}
 \usage{
 make_Y(pvals, tau = NULL, K = NULL, log.p = TRUE)
 }
@@ -22,7 +22,7 @@ Defaults to TRUE.}
 A vector, Y, of transformed p-values
 }
 \description{
-Returns the transformed p-values to be used in the TMTI, tTMTI or rtTMTI
+Returns the transformed p-values to be used in the TMTI, tTMTI or rtTMTI. Internal function.
 }
 \examples{
 ## Simulate p-values

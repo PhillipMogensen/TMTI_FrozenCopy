@@ -1,6 +1,6 @@
-#' Helper function to return $L_{n, c}$
+#' Helper function to return $L_{n, c}$.
 #'
-#' @param Y A vector of transformed values
+#' @param Y A vector of transformed p-values
 #' @param n The number describing the kind of local minimum to return; n=1
 #' returns the first local minimum, n=Inf returns the global minimum.
 #'

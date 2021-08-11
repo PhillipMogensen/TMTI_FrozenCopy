@@ -1,13 +1,12 @@
 Package: TMTI
 Type: Package
-Title: 'Too Many, Too Improbable' (TMTI) test procedures
+Title: 'Too Many, Too Improbable' (TMTI) Test Procedures
 Version: 0.1.0
 Author: Phillip B. Mogensen
 Maintainer: Phillip B. Mogensen <pbm@math.ku.dk>
 Description: Methods for computing joint tests, controlling the FWER and getting lower bounds on the number of false hypotheses in a set.
 License: MIT + file LICENSE
 Encoding: UTF-8
-LazyData: true
 RoxygenNote: 7.1.1
 Imports: dplyr, stats
 Suggests: parallel

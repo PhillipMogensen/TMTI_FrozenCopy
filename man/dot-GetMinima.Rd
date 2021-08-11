@@ -2,12 +2,12 @@
 % Please edit documentation in R/GetMinima.R
 \name{.GetMinima}
 \alias{.GetMinima}
-\title{Helper function to return $L_{n, c}$}
+\title{Helper function to return $L_{n, c}$.}
 \usage{
 .GetMinima(Y, n)
 }
 \arguments{
-\item{Y}{A vector of transformed values}
+\item{Y}{A vector of transformed p-values}
 
 \item{n}{The number describing the kind of local minimum to return; n=1
 returns the first local minimum, n=Inf returns the global minimum.}
@@ -16,7 +16,7 @@ returns the first local minimum, n=Inf returns the global minimum.}
 The index of the n'th local minimum
 }
 \description{
-Helper function to return $L_{n, c}$
+Helper function to return $L_{n, c}$.
 }
 \examples{
 ## Simulate some p-values

@@ -47,5 +47,6 @@ pvals <- c (
   rbeta(10, 1, 20),  ## Mean value of .05
   runif(10)
 )
-TopDown_TMTI(pvals)
+## Estimate the confidence set using a local Bonferroni test
+TopDown_localTest(function(x) {min(c(1, length(x) * min(x)))}, pvals)
 }

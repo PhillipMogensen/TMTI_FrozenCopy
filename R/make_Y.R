@@ -1,4 +1,4 @@
-#' Returns the transformed p-values to be used in the TMTI, tTMTI or rtTMTI
+#' Returns the transformed p-values to be used in the TMTI, tTMTI or rtTMTI. Internal function.
 #'
 #' @param pvals A vector of p-values
 #' @param tau A numeric between 0 and 1 indicating the truncation level.

@@ -45,6 +45,6 @@ pvals <- sort(c (
     rbeta(10, 1, 20),  # Mean value of .1
     runif(10)
 ))
-## Test whether the highest 10 contain any false hypotheses
-TestSet_TMTI(pvals, subset = 11:20)
+## Test whether the highest 10 contain any false hypotheses using a Bonferroni test
+TestSet_localTest(function(x) {min(c(1, length(x) * min(x)))}, pvals, subset = 11:20)
 }
