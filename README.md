@@ -1,5 +1,5 @@
 # TMTI
-This repository contains the R package 'TMTI'
+This repository contains the R package 'TMTI', which implements the methods of Mogensen and Markussen (2021). A preprint of the paper can be found here: https://arxiv.org/abs/2108.04731
 
 # Installation
 The package can be installed using e.g. devtools or the remotes package:
@@ -25,7 +25,7 @@ TMTI::TMTI(pvalues, alpha = 0.1)  # Uses only p-values that are marginally signi
 ```
 
 ## Multiple testing
-The package includes two functions for conduction Closed Testing Procedures (CTPs) in quadratic time. One function, `TMTI_CTP`, which uses the `TMTI` as local test in every layer of the CTP. The other function, `localTest_CTP`, employs a user-input local test which must satisfy the monotonicity conditions of Mogensen and Markussen (2021, unpublished). Both functions return the CTP adjusted $p$-values for all elementary hypotheses and control the FWER rate strongly.
+The package includes two functions for conduction Closed Testing Procedures (CTPs) in quadratic time. One function, `TMTI_CTP`, which uses the `TMTI` as local test in every layer of the CTP. The other function, `localTest_CTP`, employs a user-input local test which must satisfy the monotonicity conditions of Mogensen and Markussen (2021). Both functions return the CTP adjusted $p$-values for all elementary hypotheses and control the FWER rate strongly.
 
 Example:
 ```
