@@ -1,4 +1,4 @@
-#' A Closed Testing Procedure for any local test using an O(n^2) shortcut.
+#' A Closed Testing Procedure for any local test satisfying the conditions of Mogensen and Markussen (2021) using an O(n^2) shortcut.
 #'
 #' @param localTest A function which defines the choice of local test to use.
 #' @param pvals A vector of p-values

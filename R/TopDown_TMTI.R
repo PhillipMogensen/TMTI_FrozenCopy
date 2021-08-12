@@ -64,7 +64,7 @@ TopDown_TMTI <- function (
         alpha = alpha,
         tau = tau,
         K = K,
-        earlyStop = T,
+        earlyStop = TRUE,
         gammalist = gammaList,
         ...
       )

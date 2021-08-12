@@ -35,8 +35,8 @@ TestSet_TMTI <- function (
   alpha = 0.05,
   tau   = NULL,
   K     = NULL,
-  earlyStop = F,
-  verbose   = F,
+  earlyStop = FALSE,
+  verbose   = FALSE,
   gammalist = NULL,
   ...
 ) {

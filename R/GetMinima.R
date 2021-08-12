@@ -1,4 +1,4 @@
-#' Helper function to return $L_{n, c}$.
+#' Helper function to return the first local minimum that is strictly smaller than the following n entries in a vector.
 #'
 #' @param Y A vector of transformed p-values
 #' @param n The number describing the kind of local minimum to return; n=1

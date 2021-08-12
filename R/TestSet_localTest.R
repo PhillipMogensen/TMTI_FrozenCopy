@@ -28,8 +28,8 @@ TestSet_localTest <- function (
   pvals,
   subset,
   alpha = 0.05,
-  earlyStop = F,
-  verbose   = F,
+  earlyStop = FALSE,
+  verbose   = FALSE,
   ...
 ) {
   m     <- length(pvals)

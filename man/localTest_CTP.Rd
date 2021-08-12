@@ -2,7 +2,7 @@
 % Please edit documentation in R/localTest_CTP.R
 \name{localTest_CTP}
 \alias{localTest_CTP}
-\title{A Closed Testing Procedure for any local test using an O(n^2) shortcut.}
+\title{A Closed Testing Procedure for any local test satisfying the conditions of Mogensen and Markussen (2021) using an O(n^2) shortcut.}
 \usage{
 localTest_CTP(localTest, pvals, alpha = 0.05, ...)
 }
@@ -21,7 +21,7 @@ A data.frame containing:
 * Index: The original index of the unsorted p-value inputs.
 }
 \description{
-A Closed Testing Procedure for any local test using an O(n^2) shortcut.
+A Closed Testing Procedure for any local test satisfying the conditions of Mogensen and Markussen (2021) using an O(n^2) shortcut.
 }
 \examples{
 ## Simulate some p-values

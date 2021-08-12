@@ -1,4 +1,4 @@
-#' Function to bootstrap TMTI CDFs
+#' Function to bootstrap the Cumulative Distribution Functions (CDFs) of the TMTI statistics.
 #'
 #' @param m Number of tests
 #' @param n Number (or Inf) indicating what kind of minimum to consider.
@@ -26,7 +26,8 @@
 gamma_bootstrapper <- function (
   m,
   n = Inf,
-  B = 1e3, log.p = TRUE,
+  B = 1e3,
+  log.p = TRUE,
   mc.cores = 1L,
   tau = NULL,
   K = NULL

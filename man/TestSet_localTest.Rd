@@ -9,8 +9,8 @@ TestSet_localTest(
   pvals,
   subset,
   alpha = 0.05,
-  earlyStop = F,
-  verbose = F,
+  earlyStop = FALSE,
+  verbose = FALSE,
   ...
 )
 }

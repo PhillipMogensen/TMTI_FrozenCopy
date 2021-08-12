@@ -2,7 +2,7 @@
 % Please edit documentation in R/gamma_bootstrapper.R
 \name{gamma_bootstrapper}
 \alias{gamma_bootstrapper}
-\title{Function to bootstrap TMTI CDFs}
+\title{Function to bootstrap the Cumulative Distribution Functions (CDFs) of the TMTI statistics.}
 \usage{
 gamma_bootstrapper(
   m,
@@ -40,7 +40,7 @@ An approximation of the function \eqn{\gamma^m(x)} under the
 assumption that all p-values are independent and exactly uniform
 }
 \description{
-Function to bootstrap TMTI CDFs
+Function to bootstrap the Cumulative Distribution Functions (CDFs) of the TMTI statistics.
 }
 \examples{
 ## Get an approximation of gamma

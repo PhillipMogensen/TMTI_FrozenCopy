@@ -54,7 +54,7 @@ TopDown_localTest <- function (
         pvals,
         subset2,
         alpha = alpha,
-        earlyStop = T,
+        earlyStop = TRUE,
         ...
       )
       accept <- (p_loc >= alpha)

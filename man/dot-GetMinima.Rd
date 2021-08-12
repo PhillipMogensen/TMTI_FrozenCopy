@@ -2,7 +2,7 @@
 % Please edit documentation in R/GetMinima.R
 \name{.GetMinima}
 \alias{.GetMinima}
-\title{Helper function to return $L_{n, c}$.}
+\title{Helper function to return the first local minimum that is strictly smaller than the following n entries in a vector.}
 \usage{
 .GetMinima(Y, n)
 }
@@ -16,7 +16,7 @@ returns the first local minimum, n=Inf returns the global minimum.}
 The index of the n'th local minimum
 }
 \description{
-Helper function to return $L_{n, c}$.
+Helper function to return the first local minimum that is strictly smaller than the following n entries in a vector.
 }
 \examples{
 ## Simulate some p-values
