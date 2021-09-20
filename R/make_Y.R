@@ -6,7 +6,7 @@
 #' @param K An integer > 1 indicating the the truncation index. Defaults
 #' to NULL
 #' @param log.p Logical, indicating whether transformations are on log scale.
-#' Defaults to TRUE.
+#' Defaults to FALSE.
 #'
 #' @return A vector, Y, of transformed p-values
 #' @export
@@ -21,7 +21,7 @@ make_Y <- function (
   pvals,
   tau    = NULL,
   K      = NULL,
-  log.p  = TRUE
+  log.p  = FALSE
 ) {
   m <- length(pvals)
 

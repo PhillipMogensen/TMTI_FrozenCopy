@@ -14,7 +14,7 @@
 #' @param verbose Logical, indicating whether or not to write out the progress.
 #' Defaults to TRUE
 #' @param log.p Logical, indicating whether to calculate Ys on a log scale.
-#' Defaults to TRUE
+#' Defaults to FALSE
 #' @param tau Numerical (in (0,1)); threshold to use in tTMTI. If set to NULL,
 #' then either TMTI (default) or rtTMTI is used.
 #' @param K Integer; Number of smallest p-values to use in rtTMTI. If se to NULL,
@@ -40,7 +40,7 @@ TopDown_TMTI <- function (
   alpha = 0.05,
   gammaList = NULL,
   verbose = TRUE,
-  log.p = TRUE,
+  log.p = FALSE,
   tau = NULL, K = NULL,
   ...
 ) {

@@ -8,7 +8,7 @@ gamma_bootstrapper(
   m,
   n = Inf,
   B = 1000,
-  log.p = TRUE,
+  log.p = FALSE,
   mc.cores = 1L,
   tau = NULL,
   K = NULL
@@ -24,7 +24,7 @@ Defaults to Inf, corresponding to the global minimum.}
 10 * m}
 
 \item{log.p}{Logical indicating whether to calculate p-values on log-scale.
-Defaults to TRUE}
+Defaults to FALSE.}
 
 \item{mc.cores}{Integer denoting the number of cores to use when using
 parallelization, Defaults to 1, corresponding to single-threaded computations}

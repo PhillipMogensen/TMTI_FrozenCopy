@@ -9,7 +9,7 @@
 #' functions will be approximated via bootstrap, assuming independence. Defaults
 #' to NULL.
 #' @param log.p Logical, indicating whether to compute Y's on log-scale.
-#' Defaults to TRUE
+#' Defaults to FALSE
 #' @param tau Numerical (in (0,1)); threshold to use in tTMTI. If set to NULL,
 #' then either TMTI (default) or rtTMTI is used.
 #' @param K Integer; Number of smallest p-values to use in rtTMTI. If se to NULL,
@@ -37,7 +37,7 @@
 TMTI_CTP <- function (
   pvals, alpha = 0.05, B = 1e3,
   gammaList = NULL,
-  log.p = TRUE,
+  log.p = FALSE,
   tau = NULL, K = NULL,
   ...
 ) {

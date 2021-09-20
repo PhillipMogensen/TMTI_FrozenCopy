@@ -11,7 +11,7 @@ TopDown_TMTI(
   alpha = 0.05,
   gammaList = NULL,
   verbose = TRUE,
-  log.p = TRUE,
+  log.p = FALSE,
   tau = NULL,
   K = NULL,
   ...
@@ -36,7 +36,7 @@ to NULL}
 Defaults to TRUE}
 
 \item{log.p}{Logical, indicating whether to calculate Ys on a log scale.
-Defaults to TRUE}
+Defaults to FALSE}
 
 \item{tau}{Numerical (in (0,1)); threshold to use in tTMTI. If set to NULL,
 then either TMTI (default) or rtTMTI is used.}

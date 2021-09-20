@@ -6,7 +6,7 @@
 #' @param B Number of bootstrap replicates. Rule of thumb is to use at least
 #' 10 * m
 #' @param log.p Logical indicating whether to calculate p-values on log-scale.
-#' Defaults to TRUE
+#' Defaults to FALSE.
 #' @param mc.cores Integer denoting the number of cores to use when using
 #' parallelization, Defaults to 1, corresponding to single-threaded computations
 #' @param tau Numerical (in (0,1)); threshold to use in tTMTI. If set to NULL,
@@ -27,7 +27,7 @@ gamma_bootstrapper <- function (
   m,
   n = Inf,
   B = 1e3,
-  log.p = TRUE,
+  log.p = FALSE,
   mc.cores = 1L,
   tau = NULL,
   K = NULL

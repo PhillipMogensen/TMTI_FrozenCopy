@@ -9,7 +9,7 @@ TMTI_CTP(
   alpha = 0.05,
   B = 1000,
   gammaList = NULL,
-  log.p = TRUE,
+  log.p = FALSE,
   tau = NULL,
   K = NULL,
   ...
@@ -29,7 +29,7 @@ functions will be approximated via bootstrap, assuming independence. Defaults
 to NULL.}
 
 \item{log.p}{Logical, indicating whether to compute Y's on log-scale.
-Defaults to TRUE}
+Defaults to FALSE}
 
 \item{tau}{Numerical (in (0,1)); threshold to use in tTMTI. If set to NULL,
 then either TMTI (default) or rtTMTI is used.}
