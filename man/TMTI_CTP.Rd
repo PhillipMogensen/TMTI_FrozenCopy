@@ -41,10 +41,9 @@ then either TMTI (default) or tTMTI is used.}
 }
 \value{
 A data.frame containing:
-* i: The sorted index of each p-value.
+
 * p_adjust: The CTP adjusted p-value, controlling the FWER strongly.
-* FirstAccept: The first level of the test tree at which the hypothesis could
-not be rejected. NA if it is never rejected.
+
 * Index: The original index of the unsorted p-value inputs.
 }
 \description{
@@ -57,5 +56,5 @@ pvals <- c (
   rbeta(10, 1, 20),  ## Mean value of .05
   runif(10)
 )
-TMTI_CTP(pvals, earlyStop = TRUE)
+TMTI_CTP(pvals)
 }

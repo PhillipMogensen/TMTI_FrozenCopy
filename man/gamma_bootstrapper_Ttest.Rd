@@ -53,6 +53,8 @@ m <- 3
 
 X <- sample(LETTERS[1:2], d, replace = TRUE)
 Y <- matrix(rnorm(d * m), nrow = d, ncol = m)
+pvalues <- apply(Y, 2, function(y) t.test(y ~ X)$p.value)
 
-gamma_bootstrapper_Ttest(Y)
+gamma_bootstrapper_Ttest(Y)  # Produces a list of CDFs
+TMTI_CTP(pvalues, gammaList = gammaFunctions)  # Adjusted p-values using the bootstrapped CDFs
 }
