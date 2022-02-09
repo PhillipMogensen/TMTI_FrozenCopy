@@ -49,6 +49,10 @@ TopDown_TMTI <- function (
   m       <- length(pvals)
   t_alpha <- 0
 
+  if(!is.null(K))
+    if(length(K) == 1)
+      K <- rep(K, length(pvals))
+
   if (!is.null(subset) & length(subset) < length(pvals)) {
     counter <- 0
     top <- length(subset)
