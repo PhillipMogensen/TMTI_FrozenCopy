@@ -49,7 +49,9 @@ TMTI <- function (
   Y <- make_Y(pvals, tau = tau, K = K, log.p = log.p)
   Z <- Y[.GetMinima(Y, n)]
 
-  if (m <= m_max & log.p) {
+  if (!is.null(gamma)) {
+    return (gamma(Z))
+  } else if (m <= m_max & log.p) {
     if (!is.null(K) & !is.null(tau)) stop("Please supply only one of tau and K")
     else if (!is.null(K)) gamma <- function (x) rtTMTI_CDF(exp(x), m, K)
     else if (!is.null(tau)) gamma <- function (x) tTMTI_CDF(exp(x), m, tau)
