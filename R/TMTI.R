@@ -38,6 +38,7 @@ TMTI <- function (
   log.p = TRUE,
   B = 1e3,
   m_max = 100,
+  sorted = FALSE,
   ...
 ) {
   m <- length(pvals)
@@ -46,7 +47,7 @@ TMTI <- function (
     return (pvals)
   }
 
-  Y <- make_Y(pvals, tau = tau, K = K, log.p = log.p)
+  Y <- make_Y(pvals, tau = tau, K = K, log.p = log.p, sorted = sorted)
   Z <- Y[.GetMinima(Y, n)]
 
   if (!is.null(gamma)) {

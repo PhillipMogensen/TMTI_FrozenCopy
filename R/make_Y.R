@@ -21,7 +21,8 @@ make_Y <- function (
   pvals,
   tau    = NULL,
   K      = NULL,
-  log.p  = FALSE
+  log.p  = FALSE,
+  sorted = FALSE
 ) {
   m <- length(pvals)
 
@@ -41,7 +42,10 @@ make_Y <- function (
     p_subset <- 1:m
 
   stats::pbeta (
-    sort(pvals),
+    if (sorted)
+      pvals
+    else
+      sort(pvals),
     1:m,
     m + 1 - 1:m,
     log.p = log.p

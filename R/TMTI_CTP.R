@@ -73,8 +73,11 @@ TMTI_CTP <- function (
       )
     }
   }
-  for (i in 1:(m - 1)) {
-    Q[i, (i + 1):m] <- diag(Q)[i]
+  # for (i in 1:(m - 1)) {
+  #   Q[i, (i + 1):m] <- diag(Q)[i]
+  # }
+  for (i in 2:m) {
+    Q[1:(i - 1), i] = diag(Q)[1:(i - 1)]
   }
   adjusted_p <- apply(Q, 2, max)
 
