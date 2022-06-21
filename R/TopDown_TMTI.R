@@ -95,14 +95,15 @@ TopDown_TMTI <- function (
     }
   }
 
-  cat (
-    paste0 (
-      "Confidence set for the number of false hypotheses is {",
-      top - t_alpha,
-      ",..., ",
-      top,
-      "}\n"
+  if (verbose)
+    cat (
+      paste0 (
+        "Confidence set for the number of false hypotheses is {",
+        top - t_alpha,
+        ",..., ",
+        top,
+        "}\n"
+      )
     )
-  )
   return(top - t_alpha)
 }

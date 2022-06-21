@@ -65,26 +65,30 @@ TopDown_localTest <- function (
     }
   } else {
     top <- length(pvals)
-    for (i in m:1) {
+    # for (i in m:1) {
+    for (i in 1:m) {
       if (verbose) cat("\rStep", i)
-      pvals_tilde <- pvals[(m - i + 1):m]
+      # pvals_tilde <- pvals[(m - i + 1):m]
+      pvals_tilde <- pvals[i:m]
       p_loc <- localTest(pvals_tilde)
       accept <- (p_loc >= alpha)
       if (accept) {
-        t_alpha <- i
+        # t_alpha <- i
+        t_alpha <- m - i + 1
         break
       }
     }
   }
 
-  cat (
-    paste0 (
-      "Confidence set for the number of false hypotheses is {",
-      top - t_alpha,
-      ",..., ",
-      top,
-      "}\n"
+  if (verbose)
+    cat (
+      paste0 (
+        "Confidence set for the number of false hypotheses is {",
+        top - t_alpha,
+        ",..., ",
+        top,
+        "}\n"
+      )
     )
-  )
   return(top - t_alpha)
 }
