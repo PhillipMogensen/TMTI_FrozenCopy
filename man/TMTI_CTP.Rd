@@ -12,6 +12,7 @@ TMTI_CTP(
   log.p = FALSE,
   tau = NULL,
   K = NULL,
+  OnlySignificant = TRUE,
   ...
 )
 }
@@ -36,6 +37,10 @@ then either TMTI (default) or rtTMTI is used.}
 
 \item{K}{Integer; Number of smallest p-values to use in rtTMTI. If se to NULL,
 then either TMTI (default) or tTMTI is used.}
+
+\item{OnlySignificant}{Logical, indicating whether to only compute adjusted
+p-values for the marginally significant p-values (TRUE) or for all observed
+p-values (FALSE). Defaults to TRUE.}
 
 \item{...}{Additional arguments}
 }

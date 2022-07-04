@@ -4,7 +4,7 @@
 \alias{localTest_CTP}
 \title{A Closed Testing Procedure for any local test satisfying the conditions of Mogensen and Markussen (2021) using an O(n^2) shortcut.}
 \usage{
-localTest_CTP(localTest, pvals, alpha = 0.05, ...)
+localTest_CTP(localTest, pvals, alpha = 0.05, OnlySignificant = TRUE, ...)
 }
 \arguments{
 \item{localTest}{A function which defines the choice of local test to use.}
@@ -12,6 +12,10 @@ localTest_CTP(localTest, pvals, alpha = 0.05, ...)
 \item{pvals}{A vector of p-values}
 
 \item{alpha}{Level to perform each intersection test at. Defaults to 0.05}
+
+\item{OnlySignificant}{Logical, indicating whether to only compute adjusted
+p-values for the marginally significant p-values (TRUE) or for all observed
+p-values (FALSE). Defaults to TRUE.}
 
 \item{...}{Additional arguments}
 }

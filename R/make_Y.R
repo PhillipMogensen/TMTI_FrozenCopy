@@ -7,6 +7,8 @@
 #' to NULL
 #' @param log.p Logical, indicating whether transformations are on log scale.
 #' Defaults to FALSE.
+#' @param sorted Logical, indicating whether the supplied p-values are already
+#' sorted. Defaults to FALSE.
 #'
 #' @return A vector, Y, of transformed p-values
 #' @export

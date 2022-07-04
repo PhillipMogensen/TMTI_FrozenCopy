@@ -16,6 +16,8 @@
 #' @param B Numeric; number of bootstrap replicates to be used when estimating
 #' the gamma function. If a gamma is supplied, this argument is ignored.
 #' Defaults to 1e3.
+#' @param sorted Logical, indicating whether the supplied p-values are already
+#' sorted. Defaults to FALSE.
 #' @param ... Additional parameters
 #'
 #' @return A p-value from the TMTI test
@@ -29,6 +31,15 @@
 #'     runif(10)
 #' )
 #' TMTI(pvals)
+#'
+#' @docType package
+#' @description A package to compute TMTI tests, perform closed testing
+#' procedures with quadratic shortcuts and to generate confidence sets for the
+#' number of false hypotheses among m tested hypotheses.
+#' @name TMTI
+#' @useDynLib TMTI
+#' @import Rcpp
+#' @importFrom Rcpp evalCpp
 TMTI <- function (
   pvals,
   n     = Inf,

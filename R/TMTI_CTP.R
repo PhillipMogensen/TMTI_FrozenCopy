@@ -14,6 +14,9 @@
 #' then either TMTI (default) or rtTMTI is used.
 #' @param K Integer; Number of smallest p-values to use in rtTMTI. If se to NULL,
 #' then either TMTI (default) or tTMTI is used.
+#' @param OnlySignificant Logical, indicating whether to only compute adjusted
+#' p-values for the marginally significant p-values (TRUE) or for all observed
+#' p-values (FALSE). Defaults to TRUE.
 #' @param ... Additional arguments
 #'
 #' @return A data.frame containing:
@@ -38,6 +41,7 @@ TMTI_CTP <- function (
   gammaList = NULL,
   log.p = FALSE,
   tau = NULL, K = NULL,
+  OnlySignificant = TRUE,
   ...
 ) {
   ord <- order(pvals)
@@ -53,12 +57,20 @@ TMTI_CTP <- function (
   Q <- matrix(0, m, m)
 
   Q[m, m] <- p[m]
+
+  n_significant = sum(pvals <= alpha)
+
   for (i in 1:(m - 1)) {
     counter <- m
 
     Q[counter, i] <- p[i]
 
     for (j in m:(i + 1)) {
+      if (OnlySignificant & i >= n_significant) {
+        Q[, i] = 1
+        next
+      }
+
       counter <- counter - 1
 
       subp <- p[c(i, m:j)]

@@ -4,7 +4,7 @@
 \alias{make_Y}
 \title{Returns the transformed p-values to be used in the TMTI, tTMTI or rtTMTI. Internal function.}
 \usage{
-make_Y(pvals, tau = NULL, K = NULL, log.p = FALSE)
+make_Y(pvals, tau = NULL, K = NULL, log.p = FALSE, sorted = FALSE)
 }
 \arguments{
 \item{pvals}{A vector of p-values}
@@ -17,6 +17,9 @@ to NULL}
 
 \item{log.p}{Logical, indicating whether transformations are on log scale.
 Defaults to FALSE.}
+
+\item{sorted}{Logical, indicating whether the supplied p-values are already
+sorted. Defaults to FALSE.}
 }
 \value{
 A vector, Y, of transformed p-values

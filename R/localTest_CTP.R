@@ -4,6 +4,9 @@
 #' @param pvals A vector of p-values
 #' @param alpha Level to perform each intersection test at. Defaults to 0.05
 #' @param ... Additional arguments
+#' @param OnlySignificant Logical, indicating whether to only compute adjusted
+#' p-values for the marginally significant p-values (TRUE) or for all observed
+#' p-values (FALSE). Defaults to TRUE.
 #'
 #' @return A data.frame containing:
 #' * p_adjust: The CTP adjusted p-value, controlling the FWER strongly.
@@ -22,6 +25,7 @@
 
 localTest_CTP <- function (
   localTest, pvals, alpha = 0.05,
+  OnlySignificant = TRUE,
   ...
 ) {
   ord <- order(pvals)
@@ -32,7 +36,15 @@ localTest_CTP <- function (
   Q <- matrix(0, m, m)
 
   Q[m, m] <- p[m]
+
+  n_significant = sum(pvals <= alpha)
+
   for (i in 1:(m - 1)) {
+    if (OnlySignificant & i >= n_significant) {
+      Q[, i] = 1
+      next
+    }
+
     counter <- m
 
     Q[counter, i] <- p[i]
