@@ -11,10 +11,9 @@ TMTI(
   tau = NULL,
   K = NULL,
   gamma = NULL,
-  log.p = TRUE,
   B = 1000,
   m_max = 100,
-  sorted = FALSE,
+  is.sorted = FALSE,
   ...
 )
 }
@@ -32,9 +31,6 @@ to consider. Defaults to Infm, corresponding to the global minimum.}
 the gamma function will be bootstrapped assuming independence. Defaults
 to NULL}
 
-\item{log.p}{Logical; indicating whether to compute Y's on log-scale.
-Defaults to TRUE}
-
 \item{B}{Numeric; number of bootstrap replicates to be used when estimating
 the gamma function. If a gamma is supplied, this argument is ignored.
 Defaults to 1e3.}
@@ -43,8 +39,8 @@ Defaults to 1e3.}
 computation of the TMTI CDF is used. When m is above m_max it will be
 bootstrapped or user supplied instead.}
 
-\item{sorted}{Logical, indicating whether the supplied p-values are already
-sorted. Defaults to FALSE.}
+\item{is.sorted}{Logical, indicating whether the supplied p-values are already
+is.sorted. Defaults to FALSE.}
 
 \item{...}{Additional parameters}
 }

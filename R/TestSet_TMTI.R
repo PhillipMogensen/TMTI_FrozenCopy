@@ -4,7 +4,7 @@
 #' @param subset Numeric vector; the subset to be tested
 #' @param alpha Numeric; the level to test at, if stopping early. Defaults
 #' to 0.05
-#' @param tau Numeric; the treshhold to use if using rTMTI. Set to NULL for TMTI
+#' @param tau Numeric; the treshold to use if using rTMTI. Set to NULL for TMTI
 #' or rtTMTI. Defaults to NULL
 #' @param K Integer; The number of p-values to use if using rtTMTI. Set to NULL
 #' for TMTI or tTMTI. Defaults to NULL.
@@ -15,6 +15,8 @@
 #' @param gammalist List of functions. Must be such that the i'th element
 #' is the gamma function for sets of size i. Set to NULL to bootstrap the
 #' functions assuming independence. Defaults to NULL.
+#' @param is.sorted Logical, indicating the p-values are pre-sorted. Defaults
+#' to FALSE.
 #' @param ... Additional arguments to be passed onto TMTI()
 #'
 #' @return The adjusted p-value for the test of the hypothesis that there are
@@ -38,13 +40,18 @@ TestSet_TMTI <- function (
   earlyStop = FALSE,
   verbose   = FALSE,
   gammalist = NULL,
+  is.sorted = FALSE,
   ...
 ) {
   m     <- length(pvals)
   m2    <- length(subset)
-  pSub  <- sort(pvals[subset])
-  pRest <- sort(pvals[-subset])
-  # pRest <- sort(pvals[pvals > max(pSub)])
+  if (is.sorted) {
+    pSub  <- pvals[subset]
+    pRest <- pvals[-subset]
+  } else {
+    pSub  <- sort(pvals[subset])
+    pRest <- sort(pvals[-subset])
+  }
 
   out <- list()
 
@@ -56,7 +63,7 @@ TestSet_TMTI <- function (
   out[[1]] <- c(
     "p"     = pfirst,
     "layer" = 0,
-    "Accept" = (pfirst >= alpha)
+    "Accept" = (pfirst > alpha)
   )
 
   if (earlyStop & out[[1]][3]) {
@@ -81,7 +88,7 @@ TestSet_TMTI <- function (
     out[[stepCounter + 1]] <- c (
       "p" = pp,
       "layer" = stepCounter,
-      "Accept" = (pp >= alpha)
+      "Accept" = (pp > alpha)
     )
 
     if (earlyStop & out[[stepCounter + 1]][3])

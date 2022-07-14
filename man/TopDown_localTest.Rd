@@ -11,6 +11,7 @@ TopDown_localTest(
   subset = NULL,
   alpha = 0.05,
   verbose = TRUE,
+  mc.cores = 1L,
   ...
 )
 }
@@ -29,6 +30,8 @@ to 0.05}
 
 \item{verbose}{Logical, indicating whether or not to write out the progress.
 Defaults to TRUE}
+
+\item{mc.cores}{Integer specifying the number of cores to parallelize onto.}
 
 \item{...}{Additional parameters}
 }

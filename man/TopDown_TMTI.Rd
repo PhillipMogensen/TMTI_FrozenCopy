@@ -11,9 +11,9 @@ TopDown_TMTI(
   alpha = 0.05,
   gammaList = NULL,
   verbose = TRUE,
-  log.p = FALSE,
   tau = NULL,
   K = NULL,
+  is.sorted = FALSE,
   ...
 )
 }
@@ -35,16 +35,18 @@ to NULL}
 \item{verbose}{Logical, indicating whether or not to write out the progress.
 Defaults to TRUE}
 
-\item{log.p}{Logical, indicating whether to calculate Ys on a log scale.
-Defaults to FALSE}
-
 \item{tau}{Numerical (in (0,1)); threshold to use in tTMTI. If set to NULL,
 then either TMTI (default) or rtTMTI is used.}
 
 \item{K}{Integer; Number of smallest p-values to use in rtTMTI. If se to NULL,
 then either TMTI (default) or tTMTI is used.}
 
+\item{is.sorted}{Logical, indicating whether the supplied p-values are already
+is.sorted. Defaults to FALSE.}
+
 \item{...}{Additional parameters}
+
+\item{mc.cores}{Integer specifying the number of cores to parallelize onto.}
 }
 \value{
 A lower 1-alpha bound for the number of false hypotheses among the

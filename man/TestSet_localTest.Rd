@@ -11,6 +11,7 @@ TestSet_localTest(
   alpha = 0.05,
   earlyStop = FALSE,
   verbose = FALSE,
+  mc.cores = 1L,
   ...
 )
 }

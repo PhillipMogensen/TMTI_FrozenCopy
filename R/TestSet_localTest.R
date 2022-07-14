@@ -30,6 +30,7 @@ TestSet_localTest <- function (
   alpha = 0.05,
   earlyStop = FALSE,
   verbose   = FALSE,
+  mc.cores = 1L,
   ...
 ) {
   m     <- length(pvals)
@@ -43,34 +44,60 @@ TestSet_localTest <- function (
   out[[1]] <- c(
     "p"     = pfirst,
     "layer" = 0,
-    "Accept" = (pfirst >= alpha)
+    "Accept" = (pfirst > alpha)
   )
 
   if (earlyStop & out[[1]][3]) {
     return(out[[1]][1])
   }
 
-  stepCounter <- 0
 
-  for (i in length(pRest):1) {
-    stepCounter <- stepCounter + 1
-    if (verbose) {
-      cat("\rStep", stepCounter, " of ", length(pRest))
+  if (mc.cores <= 1L) {
+    stepCounter <- 0
+
+    for (i in length(pRest):1) {
+      stepCounter <- stepCounter + 1
+      if (verbose) {
+        cat("\rStep", stepCounter, " of ", length(pRest))
+      }
+      ptilde <- c(pSub, pRest[length(pRest):i])
+      pp <- localTest (
+        ptilde
+      )
+      out[[stepCounter + 1]] <- c (
+        "p" = pp,
+        "layer" = stepCounter,
+        "Accept" = (pp > alpha)
+      )
+
+      if (earlyStop & out[[stepCounter + 1]][3])
+        break
     }
-    ptilde <- c(pSub, pRest[length(pRest):i])
-    pp <- localTest (
-      ptilde
-    )
-    out[[stepCounter + 1]] <- c (
-      "p" = pp,
-      "layer" = stepCounter,
-      "Accept" = (pp >= alpha)
-    )
 
-    if (earlyStop & out[[stepCounter + 1]][3])
-      break
+    out <- do.call("rbind", out)
+    max(out[, 1])
+  } else {
+    .f = function (i) {
+      ptilde <- c(pSub, pRest[length(pRest):i])
+      localTest(ptilde)
+    }
+    chunks = rev(split(rev(seq(length(pRest))), ceiling(rev(seq(length(pRest))) / mc.cores)))
+    results = list()
+    counter = 1
+    for (x in chunks) {
+      if (verbose)
+        cat(sprintf("\rProcessing chunk %i of %i", counter, length(chunks)))
+      results_ = parallel::mclapply (
+        x,
+        .f,
+        mc.cores = mc.cores
+      )
+      results[[counter]] = unlist(results_)
+      if (any(unlist(results) > alpha)) {
+        break
+      }
+      counter = counter + 1
+    }
+    max(unlist(results))
   }
-
-  out <- do.call("rbind", out)
-  max(out[, 1])
 }

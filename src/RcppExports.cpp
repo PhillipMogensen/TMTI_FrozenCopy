@@ -10,33 +10,48 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
-// calc_TMTI_inf
-List calc_TMTI_inf(NumericVector pvals);
-RcppExport SEXP _TMTI_calc_TMTI_inf(SEXP pvalsSEXP) {
+// MakeZ_C
+double MakeZ_C(NumericVector pvals, int m);
+RcppExport SEXP _TMTI_MakeZ_C(SEXP pvalsSEXP, SEXP mSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericVector >::type pvals(pvalsSEXP);
-    rcpp_result_gen = Rcpp::wrap(calc_TMTI_inf(pvals));
+    Rcpp::traits::input_parameter< int >::type m(mSEXP);
+    rcpp_result_gen = Rcpp::wrap(MakeZ_C(pvals, m));
     return rcpp_result_gen;
 END_RCPP
 }
-// calc_truncatedTMTI_inf
-List calc_truncatedTMTI_inf(NumericVector pvals, int m_full);
-RcppExport SEXP _TMTI_calc_truncatedTMTI_inf(SEXP pvalsSEXP, SEXP m_fullSEXP) {
+// MakeY_C
+NumericVector MakeY_C(NumericVector pvals, int m);
+RcppExport SEXP _TMTI_MakeY_C(SEXP pvalsSEXP, SEXP mSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericVector >::type pvals(pvalsSEXP);
-    Rcpp::traits::input_parameter< int >::type m_full(m_fullSEXP);
-    rcpp_result_gen = Rcpp::wrap(calc_truncatedTMTI_inf(pvals, m_full));
+    Rcpp::traits::input_parameter< int >::type m(mSEXP);
+    rcpp_result_gen = Rcpp::wrap(MakeY_C(pvals, m));
+    return rcpp_result_gen;
+END_RCPP
+}
+// MakeZ_C_nsmall
+double MakeZ_C_nsmall(NumericVector pvals, int n, int m);
+RcppExport SEXP _TMTI_MakeZ_C_nsmall(SEXP pvalsSEXP, SEXP nSEXP, SEXP mSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type pvals(pvalsSEXP);
+    Rcpp::traits::input_parameter< int >::type n(nSEXP);
+    Rcpp::traits::input_parameter< int >::type m(mSEXP);
+    rcpp_result_gen = Rcpp::wrap(MakeZ_C_nsmall(pvals, n, m));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_TMTI_calc_TMTI_inf", (DL_FUNC) &_TMTI_calc_TMTI_inf, 1},
-    {"_TMTI_calc_truncatedTMTI_inf", (DL_FUNC) &_TMTI_calc_truncatedTMTI_inf, 2},
+    {"_TMTI_MakeZ_C", (DL_FUNC) &_TMTI_MakeZ_C, 2},
+    {"_TMTI_MakeY_C", (DL_FUNC) &_TMTI_MakeY_C, 2},
+    {"_TMTI_MakeZ_C_nsmall", (DL_FUNC) &_TMTI_MakeZ_C_nsmall, 3},
     {NULL, NULL, 0}
 };
 

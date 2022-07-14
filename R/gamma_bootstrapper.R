@@ -5,8 +5,6 @@
 #' Defaults to Inf, corresponding to the global minimum.
 #' @param B Number of bootstrap replicates. Rule of thumb is to use at least
 #' 10 * m
-#' @param log.p Logical indicating whether to calculate p-values on log-scale.
-#' Defaults to FALSE.
 #' @param mc.cores Integer denoting the number of cores to use when using
 #' parallelization, Defaults to 1, corresponding to single-threaded computations
 #' @param tau Numerical (in (0,1)); threshold to use in tTMTI. If set to NULL,
@@ -27,7 +25,6 @@ gamma_bootstrapper <- function (
   m,
   n = Inf,
   B = 1e3,
-  log.p = FALSE,
   mc.cores = 1L,
   tau = NULL,
   K = NULL
@@ -48,8 +45,16 @@ gamma_bootstrapper <- function (
       1:B,
       function (i) {
         pvals <- sort(stats::runif(m))
-        # Y <- pbeta(pvals, 1:m, m + 1 - 1:m, log.p = log.p)
-        Y <- make_Y(pvals, tau = tau, K = K, log.p = log.p)
+        if (!is.null(tau) & !is.null(K))
+          stop("At most one of tau and K can be non NULL")
+        else if (!is.null(tau))
+          pvals = if(sum(pvals <= tau) > 0) sort(pvals[pvals <= tau]) else min(pvals)
+        else if (!is.null(K))
+          pvals = sort(pvals)[1:K]
+        else
+          pvals = pvals[order(pvals)]
+
+        Y = TMTI::MakeY_C(pvals = pvals, m)
 
         Y[.GetMinima(Y, n)]
       },

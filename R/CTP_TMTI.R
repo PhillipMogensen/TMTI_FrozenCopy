@@ -17,6 +17,9 @@
 #' @param OnlySignificant Logical, indicating whether to only compute adjusted
 #' p-values for the marginally significant p-values (TRUE) or for all observed
 #' p-values (FALSE). Defaults to TRUE.
+#' @param progress Logical, indicating whether or not to print progress
+#' @param is.sorted Logical, indicating the p-values are pre-sorted. Defaults
+#' to FALSE.
 #' @param ... Additional arguments
 #'
 #' @return A data.frame containing:
@@ -24,7 +27,7 @@
 #' * p_adjust: The CTP adjusted p-value, controlling the FWER strongly.
 #'
 #' * Index: The original index of the unsorted p-value inputs.
-#' @export TMTI_CTP
+#' @export
 #'
 #' @examples
 #' ## Simulate some p-values
@@ -33,20 +36,26 @@
 #'   rbeta(10, 1, 20),  ## Mean value of .05
 #'   runif(10)
 #' )
-#' TMTI_CTP(pvals)
+#' CTP_TMTI(pvals)
 
 
-TMTI_CTP <- function (
+CTP_TMTI <- function (
   pvals, alpha = 0.05, B = 1e3,
   gammaList = NULL,
   log.p = FALSE,
   tau = NULL, K = NULL,
   OnlySignificant = TRUE,
+  progress = FALSE,
+  is.sorted = FALSE,
   ...
 ) {
-  ord <- order(pvals)
-  p2  <- pvals
-  p   <- sort(pvals)
+  if (is.sorted) {
+    ord = seq_along(pvals)
+    p   = pvals
+  } else {
+    ord <- order(pvals)
+    p   <- sort(pvals)
+  }
   m   <- length(pvals)
 
   if (!is.null(K)) {
@@ -60,7 +69,17 @@ TMTI_CTP <- function (
 
   n_significant = sum(pvals <= alpha)
 
+  if (progress)
+    count_max = if(OnlySignificant) n_significant else m
+
   for (i in 1:(m - 1)) {
+    if (progress)
+      cat(
+        sprintf(
+          "\rAdjusting p-value %i of %i",
+          i, count_max
+        )
+      )
     counter <- m
 
     Q[counter, i] <- p[i]
@@ -80,14 +99,11 @@ TMTI_CTP <- function (
         pvals = subp,
         tau   = tau,
         K     = K[m2],
-        log.p = log.p,
-        gamma = gammaList[[m2]]
+        gamma = gammaList[[m2]],
+        is.sorted = is.sorted
       )
     }
   }
-  # for (i in 1:(m - 1)) {
-  #   Q[i, (i + 1):m] <- diag(Q)[i]
-  # }
   for (i in 2:m) {
     Q[1:(i - 1), i] = diag(Q)[1:(i - 1)]
   }

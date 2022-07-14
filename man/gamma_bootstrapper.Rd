@@ -4,15 +4,7 @@
 \alias{gamma_bootstrapper}
 \title{Function to bootstrap the Cumulative Distribution Functions (CDFs) of the TMTI statistics.}
 \usage{
-gamma_bootstrapper(
-  m,
-  n = Inf,
-  B = 1000,
-  log.p = FALSE,
-  mc.cores = 1L,
-  tau = NULL,
-  K = NULL
-)
+gamma_bootstrapper(m, n = Inf, B = 1000, mc.cores = 1L, tau = NULL, K = NULL)
 }
 \arguments{
 \item{m}{Number of tests}
@@ -22,9 +14,6 @@ Defaults to Inf, corresponding to the global minimum.}
 
 \item{B}{Number of bootstrap replicates. Rule of thumb is to use at least
 10 * m}
-
-\item{log.p}{Logical indicating whether to calculate p-values on log-scale.
-Defaults to FALSE.}
 
 \item{mc.cores}{Integer denoting the number of cores to use when using
 parallelization, Defaults to 1, corresponding to single-threaded computations}

@@ -8,8 +8,6 @@
 #' Defaults to Inf, corresponding to the global minimum.
 #' @param B Number of bootstrap replicates. Rule of thumb is to use at least
 #' 10 * m
-#' @param log.p Logical indicating whether to calculate p-values on log-scale.
-#' Defaults to FALSE.
 #' @param mc.cores Integer denoting the number of cores to use when using
 #' parallelization, Defaults to 1, corresponding to single-threaded computations
 #' @param tau Numerical (in (0,1)); threshold to use in tTMTI. If set to NULL,
@@ -30,14 +28,13 @@
 #' pvalues <- apply(Y, 2, function(y) t.test(y ~ X)$p.value)
 #'
 #' gammaFunctions <- gamma_bootstrapper_Ttest(Y, X)  # Produces a list of CDFs
-#' TMTI_CTP(pvalues, gammaList = gammaFunctions)  # Adjusted p-values using the bootstrapped CDFs
+#' CTP_TMTI(pvalues, gammaList = gammaFunctions)  # Adjusted p-values using the bootstrapped CDFs
 
 gamma_bootstrapper_Ttest <- function (
   Y,
   X = NULL,
   n = Inf,
   B = 1e3,
-  log.p = FALSE,
   mc.cores = 1L,
   tau = NULL,
   K = NULL
@@ -50,14 +47,23 @@ gamma_bootstrapper_Ttest <- function (
     .make_TMTI <- function (subset) {
       X2 <- sample(X)
 
-      pvals <- lapply (
+      pvals <- sapply (
         subset,
         function (i) {
           stats::t.test(Y[, i] ~ X2)$p.value
         }
       )
+      m = length(pvals)
+      if (!is.null(tau) & !is.null(K))
+        stop("At most one of tau and K can be non NULL")
+      else if (!is.null(tau))
+        pvals = if(sum(pvals <= tau) > 0) sort(pvals[pvals <= tau]) else min(pvals)
+      else if (!is.null(K))
+        pvals = sort(pvals)[1:K]
+      else
+        pvals = pvals[order(pvals)]
 
-      out <- TMTI::make_Y(pvals = unlist(pvals), tau = tau, K = K, log.p = log.p)
+      out = TMTI::MakeY_C(pvals = pvals, m)
 
       out[.GetMinima(out, n = n)]
     }
@@ -71,13 +77,23 @@ gamma_bootstrapper_Ttest <- function (
         ncol = ncol(Y)
       )
 
-      pvals <- lapply (
+      pvals <- sapply (
         subset,
         function (i) {
           stats::t.test(signs[, i] * Y[, i])$p.value
         }
       )
-      out <- TMTI::make_Y(pvals = unlist(pvals), tau = tau, K = K, log.p = log.p)
+      m = length(pvals)
+      if (!is.null(tau) & !is.null(K))
+        stop("At most one of tau and K can be non NULL")
+      else if (!is.null(tau))
+        pvals = if(sum(pvals <= tau) > 0) sort(pvals[pvals <= tau]) else min(pvals)
+      else if (!is.null(K))
+        pvals = sort(pvals)[1:K]
+      else
+        pvals = pvals[order(pvals)]
+
+      out = TMTI::MakeY_C(pvals = pvals, m)
 
       out[.GetMinima(out, n = n)]
     }

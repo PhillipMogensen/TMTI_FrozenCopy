@@ -3,15 +3,15 @@
 #' @param localTest A function which defines the choice of local test to use.
 #' @param pvals A vector of p-values
 #' @param alpha Level to perform each intersection test at. Defaults to 0.05
-#' @param ... Additional arguments
 #' @param OnlySignificant Logical, indicating whether to only compute adjusted
 #' p-values for the marginally significant p-values (TRUE) or for all observed
 #' p-values (FALSE). Defaults to TRUE.
+#' @param ... Additional arguments
 #'
 #' @return A data.frame containing:
 #' * p_adjust: The CTP adjusted p-value, controlling the FWER strongly.
 #' * Index: The original index of the unsorted p-value inputs.
-#' @export localTest_CTP
+#' @export
 #'
 #' @examples
 #' ## Simulate some p-values
@@ -21,9 +21,9 @@
 #'   runif(10)
 #' )
 #' ## Perform the CTP using a local Bonferroni test
-#' localTest_CTP(function(x) {min(c(length(x) * min(x), 1))}, pvals)
+#' CTP_localTest(function(x) {min(c(length(x) * min(x), 1))}, pvals)
 
-localTest_CTP <- function (
+CTP_localTest <- function (
   localTest, pvals, alpha = 0.05,
   OnlySignificant = TRUE,
   ...

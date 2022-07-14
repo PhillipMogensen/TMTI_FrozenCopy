@@ -3,25 +3,45 @@
 
 #' Leading NA
 #'
-#' Returns the TMTI_infinity statistic from a pre-sorted vector of p-values
-#'
-#' @param pvals A NumericVector
-#' @export
-calc_TMTI_inf <- function(pvals) {
-    .Call('_TMTI_calc_TMTI_inf', PACKAGE = 'TMTI', pvals)
-}
-
-#' Leading NA
-#'
-#' Returns the truncated TMTI_infinity statistic from pre-sorted,
-#' pre-truncated p-values.
+#' Returns the TMTI_infinity statistic from pre-sorted,
+#' pre-truncated vector of p-values. If no truncation is used, set m_full = m
 #'
 #' @param pvals A NumericVector containing the truncated sorted p-values. It
 #' is important that this vector: 1) contains only the truncated p-values (i.e,
 #' those that fall below the truncation point) and 2) is sorted.
-#' @param m_full The total (i.e., non-truncated) number of p-values.
+#' @param m The total (i.e., non-truncated) number of p-values.
 #' @export
-calc_truncatedTMTI_inf <- function(pvals, m_full) {
-    .Call('_TMTI_calc_truncatedTMTI_inf', PACKAGE = 'TMTI', pvals, m_full)
+MakeZ_C <- function(pvals, m) {
+    .Call('_TMTI_MakeZ_C', PACKAGE = 'TMTI', pvals, m)
+}
+
+#' Leading NA
+#'
+#' Returns the transformed p-values (Y) from pre-sorted p-values and
+#' pre-truncated p-values. If not truncation is used, set m_full = m
+#'
+#' @param pvals A NumericVector containing the truncated sorted p-values. It
+#' is important that this vector: 1) contains only the truncated p-values (i.e,
+#' those that fall below the truncation point) and 2) is sorted.
+#' @param m The total (i.e., non-truncated) number of p-values.
+#' @export
+MakeY_C <- function(pvals, m) {
+    .Call('_TMTI_MakeY_C', PACKAGE = 'TMTI', pvals, m)
+}
+
+#' Leading NA
+#'
+#' Returns the transformed p-values (Y) from pre-sorted p-values and
+#' pre-truncated p-values when n < m - 1
+#'
+#' @param pvals A NumericVector containing the truncated sorted p-values. It
+#' is important that this vector: 1) contains only the truncated p-values (i.e,
+#' those that fall below the truncation point) and 2) is sorted.
+#' @param n A positive number (or Inf) indicating which type of local minimum
+#' to consider. Defaults to Infm, corresponding to the global minimum.
+#' @param m The total (i.e., non-truncated) number of p-values.
+#' @export
+MakeZ_C_nsmall <- function(pvals, n, m) {
+    .Call('_TMTI_MakeZ_C_nsmall', PACKAGE = 'TMTI', pvals, n, m)
 }
 
