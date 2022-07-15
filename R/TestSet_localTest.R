@@ -68,7 +68,8 @@ TestSet_localTest <- function (
         cat("\rStep", stepCounter, " of ", length(pRest))
       }
       # ptilde <- c(pSub, pRest[length(pRest):i])
-      ptilde <- c(pSub, pRest[i:length(pRest)])
+      ptilde <- sort(c(pSub, pRest[i:length(pRest)]))
+
       pp <- localTest (
         ptilde
       )
@@ -87,7 +88,7 @@ TestSet_localTest <- function (
   } else {
     .f = function (i) {
       # ptilde <- c(pSub, pRest[length(pRest):i])
-      ptilde <- c(pSub, pRest[i:length(pRest)])
+      ptilde <- sort(c(pSub, pRest[i:length(pRest)]))
       localTest(ptilde)
     }
     chunks = rev(split(rev(seq(length(pRest))), ceiling(rev(seq(length(pRest))) / chunksize)))
