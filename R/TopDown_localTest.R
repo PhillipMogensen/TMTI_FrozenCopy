@@ -35,6 +35,7 @@ TopDown_localTest <- function (
   alpha = 0.05,
   verbose = TRUE,
   mc.cores = 1L,
+  chunksize = 4 * mc.cores,
   ...
 ) {
   ord     <- order(pvals)
@@ -54,7 +55,8 @@ TopDown_localTest <- function (
           )
         )
       }
-      subset2 <- subset[length(subset):i]
+      # subset2 <- subset[length(subset):i]
+      subset2 <- subset[i:length(subset)]
       p_loc <- TestSet_localTest (
         localTest,
         pvals,
@@ -151,7 +153,7 @@ TopDown_localTest <- function (
         p_loc <- localTest(pvals_tilde)
         p_loc
       }
-      chunks = split(seq(m), ceiling(seq(m) / mc.cores))
+      chunks = split(seq(m), ceiling(seq(m) / chunksize))
       results = list()
       counter = 1
       for (x in chunks) {

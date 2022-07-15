@@ -45,18 +45,24 @@ gamma_bootstrapper <- function (
       1:B,
       function (i) {
         pvals <- sort(stats::runif(m))
-        if (!is.null(tau) & !is.null(K))
-          stop("At most one of tau and K can be non NULL")
-        else if (!is.null(tau))
-          pvals = if(sum(pvals <= tau) > 0) sort(pvals[pvals <= tau]) else min(pvals)
-        else if (!is.null(K))
-          pvals = sort(pvals)[1:K]
-        else
-          pvals = pvals[order(pvals)]
 
-        Y = TMTI::MakeY_C(pvals = pvals, m)
-
-        Y[.GetMinima(Y, n)]
+        # if (!is.null(tau) & !is.null(K))
+        #   stop("At most one of tau and K can be non NULL")
+        # else if (!is.null(tau))
+        #   pvals = if(sum(pvals <= tau) > 0) sort(pvals[pvals <= tau]) else min(pvals)
+        # else if (!is.null(K))
+        #   pvals = sort(pvals)[1:K]
+        # else
+        #   pvals = pvals[order(pvals)]
+        #
+        # Y = TMTI::MakeY_C(pvals = pvals, m)
+        #
+        # Y[.GetMinima(Y, n)]
+        if (n >= m) {
+          Z = TMTI::MakeZ_C(pvals, m)
+        } else {
+          Z = MakeZ_C_nsmall(pvals, n, m)
+        }
       },
       mc.cores = mc.cores
     )

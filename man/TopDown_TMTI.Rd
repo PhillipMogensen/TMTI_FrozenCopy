@@ -14,6 +14,7 @@ TopDown_TMTI(
   tau = NULL,
   K = NULL,
   is.sorted = FALSE,
+  mc.cores = 1L,
   ...
 )
 }
@@ -44,9 +45,9 @@ then either TMTI (default) or tTMTI is used.}
 \item{is.sorted}{Logical, indicating whether the supplied p-values are already
 is.sorted. Defaults to FALSE.}
 
-\item{...}{Additional parameters}
-
 \item{mc.cores}{Integer specifying the number of cores to parallelize onto.}
+
+\item{...}{Additional parameters}
 }
 \value{
 A lower 1-alpha bound for the number of false hypotheses among the

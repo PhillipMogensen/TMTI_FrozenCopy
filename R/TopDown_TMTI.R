@@ -43,6 +43,7 @@ TopDown_TMTI <- function (
   verbose = TRUE,
   tau = NULL, K = NULL,
   is.sorted = FALSE,
+  mc.cores = 1L,
   ...
 ) {
   if (is.sorted) {
@@ -71,7 +72,8 @@ TopDown_TMTI <- function (
           )
         )
       }
-      subset2 <- subset[length(subset):i]
+      # subset2 <- subset[length(subset):i]
+      subset2 <- subset[i:length(subset)]
       p_TMTI <- TestSet_TMTI (
         pvals,
         subset2,
@@ -106,6 +108,7 @@ TopDown_TMTI <- function (
         }
       }
     } else {
+      top <- length(pvals)
       .f = function (i) {
         pvals_tilde <- pvals[i:m]
         TMTI(pvals_tilde, gamma = gammaList[[i]], tau = tau, K = K[i], is.sorted = is.sorted, ...)

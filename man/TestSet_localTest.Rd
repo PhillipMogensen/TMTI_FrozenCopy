@@ -12,6 +12,8 @@ TestSet_localTest(
   earlyStop = FALSE,
   verbose = FALSE,
   mc.cores = 1L,
+  chunksize = 4 * mc.cores,
+  is.sorted = FALSE,
   ...
 )
 }

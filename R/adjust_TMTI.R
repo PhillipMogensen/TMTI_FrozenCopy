@@ -34,6 +34,7 @@ adjust_TMTI = function (
     earlyStop = FALSE,
     verbose = FALSE,
     mc.cores = 1L,
+    chunksize = 4 * mc.cores,
     ...
 ) {
   m2 = sum(pvals <= alpha)
@@ -60,37 +61,39 @@ adjust_TMTI = function (
       tau = tau, K = K,
       gammaList = gammaList,
       verbose = verbose,
-      is.sorted = is.sorted
+      is.sorted = is.sorted,
+      mc.cores = mc.cores,
+      chunksize = chunksize
     )
     out
   }
 
-  if (mc.cores == 1) {
-    results = list()
-    for (i in seq(m2)) {
-      results[[i]] = .f(i)
-      if (results[[i]] >= alpha & earlyStop) {
-        message(paste0("Adjusted p-value ", i, " was above alpha, implying that the remaining are also above alpha. Exiting"))
-        break
-      }
-    }
-    return (
-      data.frame (
-        "p"     = unlist(results),
-        "index" = ord[1:length(results)]
-      )
-    )
-  } else {
-    results = parallel::mclapply (
-      seq(m2),
-      .f,
-      mc.cores = mc.cores
-    )
-    return (
-      data.frame (
-        "p"     = unlist(results),
-        "index" = ord[1:length(results)]
-      )
-    )
-  }
+  # if (mc.cores == 1) {
+  #   results = list()
+  #   for (i in seq(m2)) {
+  #     results[[i]] = .f(i)
+  #     if (results[[i]] >= alpha & earlyStop) {
+  #       message(paste0("Adjusted p-value ", i, " was above alpha, implying that the remaining are also above alpha. Exiting"))
+  #       break
+  #     }
+  #   }
+  #   return (
+  #     data.frame (
+  #       "p"     = unlist(results),
+  #       "index" = ord[1:length(results)]
+  #     )
+  #   )
+  # } else {
+  #   results = parallel::mclapply (
+  #     seq(m2),
+  #     .f,
+  #     mc.cores = mc.cores
+  #   )
+  #   return (
+  #     data.frame (
+  #       "p"     = unlist(results),
+  #       "index" = ord[1:length(results)]
+  #     )
+  #   )
+  # }
 }

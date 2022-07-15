@@ -31,12 +31,19 @@ TestSet_localTest <- function (
   earlyStop = FALSE,
   verbose   = FALSE,
   mc.cores = 1L,
+  chunksize = 4 * mc.cores,
+  is.sorted = FALSE,
   ...
 ) {
   m     <- length(pvals)
   m2    <- length(subset)
-  pSub  <- sort(pvals[subset])
-  pRest <- sort(pvals[-subset])
+  if (is.sorted) {
+    pSub  <- pvals[subset]
+    pRest <- pvals[-subset]
+  } else {
+    pSub  <- sort(pvals[subset])
+    pRest <- sort(pvals[-subset])
+  }
 
   out <- list()
 
@@ -60,7 +67,8 @@ TestSet_localTest <- function (
       if (verbose) {
         cat("\rStep", stepCounter, " of ", length(pRest))
       }
-      ptilde <- c(pSub, pRest[length(pRest):i])
+      # ptilde <- c(pSub, pRest[length(pRest):i])
+      ptilde <- c(pSub, pRest[i:length(pRest)])
       pp <- localTest (
         ptilde
       )
@@ -78,10 +86,11 @@ TestSet_localTest <- function (
     max(out[, 1])
   } else {
     .f = function (i) {
-      ptilde <- c(pSub, pRest[length(pRest):i])
+      # ptilde <- c(pSub, pRest[length(pRest):i])
+      ptilde <- c(pSub, pRest[i:length(pRest)])
       localTest(ptilde)
     }
-    chunks = rev(split(rev(seq(length(pRest))), ceiling(rev(seq(length(pRest))) / mc.cores)))
+    chunks = rev(split(rev(seq(length(pRest))), ceiling(rev(seq(length(pRest))) / chunksize)))
     results = list()
     counter = 1
     for (x in chunks) {

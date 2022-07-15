@@ -77,7 +77,8 @@ TestSet_TMTI <- function (
     if (verbose) {
       cat("\rStep", stepCounter, " of ", length(pRest))
     }
-    ptilde <- c(pSub, pRest[length(pRest):i])
+    # ptilde <- c(pSub, pRest[length(pRest):i])
+    ptilde <- c(pSub, pRest[i:length(pRest)])
     pp <- TMTI (
       ptilde,
       tau = tau,

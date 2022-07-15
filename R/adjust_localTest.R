@@ -38,6 +38,7 @@ adjust_localTest = function (
     verbose = FALSE,
     mc.cores = 1L,
     direction = "increasing",
+    chunksize = 4 * mc.cores,
     ...
 ) {
   m2 = sum(pvals <= alpha)
@@ -53,24 +54,23 @@ adjust_localTest = function (
     ord <- order(pvals)
   }
 
-  .f = function (i, es = earlyStop) {
-    if (verbose)
-      cat(sprintf("\rAdjusting p-value %i of %i.", i, m2))
-
-    out = TestSet_localTest (
-      localTest,
-      pvals = pvals,
-      subset = ord[i],
-      alpha = alpha,
-      earlyStop = es,
-      verbose = verbose,
-      is.sorted = is.sorted,
-      ...
-    )
-    out
-  }
-
   if (mc.cores == 1) {
+    .f = function (i, es = earlyStop) {
+      if (verbose)
+        cat(sprintf("\rAdjusting p-value %i of %i.", i, m2))
+
+      out = TestSet_localTest (
+        localTest,
+        pvals = pvals,
+        subset = ord[i],
+        alpha = alpha,
+        earlyStop = es,
+        verbose = verbose,
+        is.sorted = is.sorted,
+        ...
+      )
+      out
+    }
     results = list()
     if (tolower(direction) == "increasing" | tolower(direction) == "i") {
       for (i in seq(m2)) {
@@ -118,29 +118,63 @@ adjust_localTest = function (
       }
     }
   } else {
-    chunks = split(seq(m2), ceiling(seq(m2) / mc.cores))
-    results = list()
-    counter = 1
-    for (x in chunks) {
+    .f = function (i, es = earlyStop) {
       if (verbose)
-        cat(sprintf("\rProcessing chunk %i of %i", counter, length(chunks)))
-      results_ = parallel::mclapply (
-        x,
-        .f,
-        mc.cores = mc.cores
+        cat(sprintf("\rAdjusting p-value %i of %i.", i, m2))
+
+      out = TestSet_localTest (
+        localTest,
+        pvals = pvals,
+        subset = ord[i],
+        alpha = alpha,
+        earlyStop = es,
+        verbose = verbose,
+        is.sorted = is.sorted,
+        mc.cores = mc.cores,
+        chunksize = chunksize,
+        ...
       )
-      results[[counter]] = unlist(results_)
-      if (any(unlist(results) > alpha)) {
-        message(paste0("an adjusted p-value in chunk", counter, " was above alpha, implying that the remaining chunks are all above alpha. Exiting"))
+      out
+    }
+    results = list()
+    for (i in seq(m2)) {
+      results[[i]] = .f(i)
+      if (results[[i]] >= alpha & earlyStop) {
+        message(paste0("Adjusted p-value ", i, " was above alpha, implying that the remaining are also above alpha. Exiting"))
         break
       }
-      counter = counter + 1
     }
     return (
       data.frame (
         "p"     = unlist(results),
-        "index" = ord[1:length(unlist(results))]
+        "index" = ord[1:length(results)]
       )
     )
   }
+  # else {
+  #   chunks = split(seq(m2), ceiling(seq(m2) / chunksize))
+  #   results = list()
+  #   counter = 1
+  #   for (x in chunks) {
+  #     if (verbose)
+  #       cat(sprintf("\rProcessing chunk %i of %i", counter, length(chunks)))
+  #     results_ = parallel::mclapply (
+  #       x,
+  #       .f,
+  #       mc.cores = mc.cores
+  #     )
+  #     results[[counter]] = unlist(results_)
+  #     if (any(unlist(results) > alpha)) {
+  #       message(paste0("an adjusted p-value in chunk", counter, " was above alpha, implying that the remaining chunks are all above alpha. Exiting"))
+  #       break
+  #     }
+  #     counter = counter + 1
+  #   }
+  #   return (
+  #     data.frame (
+  #       "p"     = unlist(results),
+  #       "index" = ord[1:length(unlist(results))]
+  #     )
+  #   )
+  # }
 }

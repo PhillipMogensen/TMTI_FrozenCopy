@@ -75,8 +75,9 @@ TMTI <- function (
   if (n >= m) {
     Z = TMTI::MakeZ_C(pvals, m)
   } else {
-    Y = TMTI::MakeY_C(pvals = pvals, m)
-    Z <- Y[.GetMinima(Y, n)]
+    # Y = TMTI::MakeY_C(pvals = pvals, m)
+    # Z <- Y[.GetMinima(Y, n)]
+    Z = MakeZ_C_nsmall(pvals, n, m)
   }
 
 
@@ -89,7 +90,7 @@ TMTI <- function (
     else if (!is.null(tau)) gamma <- function (x) tTMTI_CDF(x, m, tau)
     else gamma <- function (x) TMTI_CDF(x, m)
   } else if(is.null(gamma)) {
-    gamma <- gamma_bootstrapper(m, B = B, tau = tau, K = K, ...)
+    gamma <- gamma_bootstrapper(m, B = B, tau = tau, K = K, n = n, ...)
   }
 
   gamma(Z)

@@ -14,6 +14,7 @@ adjust_localTest(
   verbose = FALSE,
   mc.cores = 1L,
   direction = "increasing",
+  chunksize = 4 * mc.cores,
   ...
 )
 }

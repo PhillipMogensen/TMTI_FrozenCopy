@@ -12,6 +12,7 @@ TopDown_localTest(
   alpha = 0.05,
   verbose = TRUE,
   mc.cores = 1L,
+  chunksize = 4 * mc.cores,
   ...
 )
 }
