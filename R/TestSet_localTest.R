@@ -45,6 +45,8 @@ TestSet_localTest <- function (
     pRest <- sort(pvals[-subset])
   }
 
+  is.subset.sorted = !is.unsorted(subset)
+
   out <- list()
 
   pfirst <- localTest(pSub)
@@ -67,8 +69,10 @@ TestSet_localTest <- function (
       if (verbose) {
         cat("\rStep", stepCounter, " of ", length(pRest))
       }
-      # ptilde <- c(pSub, pRest[length(pRest):i])
-      ptilde <- sort(c(pSub, pRest[i:length(pRest)]))
+      if (is.subset.sorted)
+        ptilde <- c(pSub, pRest[i:length(pRest)])
+      else
+        ptilde <- sort(c(pSub, pRest[i:length(pRest)]))
 
       pp <- localTest (
         ptilde
@@ -87,8 +91,10 @@ TestSet_localTest <- function (
     max(out[, 1])
   } else {
     .f = function (i) {
-      # ptilde <- c(pSub, pRest[length(pRest):i])
-      ptilde <- sort(c(pSub, pRest[i:length(pRest)]))
+      if (is.subset.sorted)
+        ptilde <- c(pSub, pRest[i:length(pRest)])
+      else
+        ptilde <- sort(c(pSub, pRest[i:length(pRest)]))
       localTest(ptilde)
     }
     chunks = rev(split(rev(seq(length(pRest))), ceiling(rev(seq(length(pRest))) / chunksize)))
