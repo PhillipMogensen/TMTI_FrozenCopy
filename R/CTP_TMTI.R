@@ -32,57 +32,57 @@
 #' @examples
 #' ## Simulate some p-values
 #' ## The first 10 are from false hypotheses, the next 10 are from true
-#' pvals <- c (
-#'   rbeta(10, 1, 20),  ## Mean value of .05
+#' pvals = c(
+#'   rbeta(10, 1, 20), ## Mean value of .05
 #'   runif(10)
 #' )
 #' CTP_TMTI(pvals)
-
-
-CTP_TMTI <- function (
-  pvals, alpha = 0.05, B = 1e3,
-  gammaList = NULL,
-  log.p = FALSE,
-  tau = NULL, K = NULL,
-  OnlySignificant = TRUE,
-  progress = FALSE,
-  is.sorted = FALSE,
-  ...
-) {
+#'
+CTP_TMTI = function(pvals, alpha = 0.05, B = 1e3,
+                     gammaList = NULL,
+                     log.p = FALSE,
+                     tau = NULL, K = NULL,
+                     OnlySignificant = TRUE,
+                     progress = FALSE,
+                     is.sorted = FALSE,
+                     ...) {
   if (is.sorted) {
     ord = seq_along(pvals)
-    p   = pvals
+    p = pvals
   } else {
-    ord <- order(pvals)
-    p   <- sort(pvals)
+    ord = order(pvals)
+    p = sort(pvals)
   }
-  m   <- length(pvals)
+  m = length(pvals)
 
   if (!is.null(K)) {
-    if (length(K) < length(pvals))
-      K <- rep(K, length.out = length(pvals))
+    if (length(K) < length(pvals)) {
+      K = rep(K, length.out = length(pvals))
+    }
   }
 
-  Q <- matrix(0, m, m)
+  Q = matrix(0, m, m)
 
-  Q[m, m] <- p[m]
+  Q[m, m] = p[m]
 
   n_significant = sum(pvals <= alpha)
 
-  if (progress)
-    count_max = if(OnlySignificant) n_significant else m
+  if (progress) {
+    count_max = if (OnlySignificant) n_significant else m
+  }
 
   for (i in 1:(m - 1)) {
-    if (progress)
+    if (progress) {
       cat(
         sprintf(
           "\rAdjusting p-value %i of %i",
           i, count_max
         )
       )
-    counter <- m
+    }
+    counter = m
 
-    Q[counter, i] <- p[i]
+    Q[counter, i] = p[i]
 
     for (j in m:(i + 1)) {
       if (OnlySignificant & i >= n_significant) {
@@ -90,15 +90,15 @@ CTP_TMTI <- function (
         next
       }
 
-      counter <- counter - 1
+      counter = counter - 1
 
-      subp <- p[c(i, m:j)]
-      m2   <- length(subp)
+      subp = p[c(i, m:j)]
+      m2 = length(subp)
 
-      Q[counter, i] <- TMTI (
+      Q[counter, i] = TMTI(
         pvals = subp,
-        tau   = tau,
-        K     = K[m2],
+        tau = tau,
+        K = K[m2],
         gamma = gammaList[[m2]],
         is.sorted = is.sorted
       )
@@ -107,9 +107,9 @@ CTP_TMTI <- function (
   for (i in 2:m) {
     Q[1:(i - 1), i] = diag(Q)[1:(i - 1)]
   }
-  adjusted_p <- apply(Q, 2, max)
+  adjusted_p = apply(Q, 2, max)
 
-  data.frame (
+  data.frame(
     "p_adjusted" = adjusted_p,
     "index"      = ord
   )

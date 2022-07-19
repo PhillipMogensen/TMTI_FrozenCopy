@@ -29,42 +29,42 @@
 #' @examples
 #' ## Simulate some p-values
 #' ## The first 10 are from false hypotheses, the next 10 are from true
-#' pvals <- c (
-#'   rbeta(10, 1, 20),  ## Mean value of .05
+#' pvals = c(
+#'   rbeta(10, 1, 20), ## Mean value of .05
 #'   runif(10)
 #' )
 #' TopDown_TMTI(pvals)
-
-TopDown_TMTI <- function (
-  pvals,
-  subset = NULL,
-  alpha = 0.05,
-  gammaList = NULL,
-  verbose = TRUE,
-  tau = NULL, K = NULL,
-  is.sorted = FALSE,
-  mc.cores = 1L,
-  ...
-) {
+#'
+TopDown_TMTI = function(pvals,
+                         subset = NULL,
+                         alpha = 0.05,
+                         gammaList = NULL,
+                         verbose = TRUE,
+                         tau = NULL, K = NULL,
+                         is.sorted = FALSE,
+                         mc.cores = 1L,
+                         ...) {
   if (is.sorted) {
     ord = seq_along(pvals)
-    p   = pvals
+    p = pvals
   } else {
-    ord <- order(pvals)
-    p   <- sort(pvals)
+    ord = order(pvals)
+    p = sort(pvals)
   }
-  m       <- length(pvals)
-  t_alpha <- 0
+  m = length(pvals)
+  t_alpha = 0
 
-  if(!is.null(K))
-    if(length(K) == 1)
-      K <- rep(K, length(pvals))
+  if (!is.null(K)) {
+    if (length(K) == 1) {
+      K = rep(K, length(pvals))
+    }
+  }
 
   if (!is.null(subset) & length(subset) < length(pvals)) {
-    counter <- 0
-    top <- length(subset)
+    counter = 0
+    top = length(subset)
     for (i in seq_along(subset)) {
-      counter <- counter + 1
+      counter = counter + 1
       if (verbose) {
         cat(
           sprintf(
@@ -72,54 +72,56 @@ TopDown_TMTI <- function (
           )
         )
       }
-      # subset2 <- subset[length(subset):i]
-      subset2 <- subset[i:length(subset)]
-      p_TMTI <- TestSet_TMTI (
+      # subset2 = subset[length(subset):i]
+      subset2 = subset[i:length(subset)]
+      p_TMTI = TestSet_TMTI(
         pvals,
         subset2,
         alpha = alpha,
         tau = tau,
         K = K,
-        earlyStop = TRUE,
+        EarlyStop = TRUE,
         gammalist = gammaList,
         verbose = verbose,
         is.sorted = is.sorted,
         ...
       )
-      accept <- (p_TMTI >= alpha)
+      accept = (p_TMTI >= alpha)
       if (accept) {
-        t_alpha <- length(subset2)
+        t_alpha = length(subset2)
         break
       }
     }
   } else {
     if (mc.cores <= 1) {
-      if (is.null(gammaList))
-        gammaList <- lapply(1:length(pvals), function(i) NULL)
-      top <- length(pvals)
+      if (is.null(gammaList)) {
+        gammaList = lapply(1:length(pvals), function(i) NULL)
+      }
+      top = length(pvals)
       for (i in 1:m) {
         if (verbose) cat("\rStep", i)
-        pvals_tilde <- pvals[i:m]
-        p_TMTI <- TMTI(pvals_tilde, gamma = gammaList[[i]], tau = tau, K = K[i], is.sorted = is.sorted, ...)
-        accept <- (p_TMTI >= alpha)
+        pvals_tilde = pvals[i:m]
+        p_TMTI = TMTI(pvals_tilde, gamma = gammaList[[i]], tau = tau, K = K[i], is.sorted = is.sorted, ...)
+        accept = (p_TMTI >= alpha)
         if (accept) {
-          t_alpha <- length(pvals_tilde)
+          t_alpha = length(pvals_tilde)
           break
         }
       }
     } else {
-      top <- length(pvals)
-      .f = function (i) {
-        pvals_tilde <- pvals[i:m]
+      top = length(pvals)
+      .f = function(i) {
+        pvals_tilde = pvals[i:m]
         TMTI(pvals_tilde, gamma = gammaList[[i]], tau = tau, K = K[i], is.sorted = is.sorted, ...)
       }
       chunks = split(seq(m), ceiling(seq(m) / mc.cores))
       results = list()
       counter = 1
       for (x in chunks) {
-        if (verbose)
+        if (verbose) {
           cat(sprintf("\rProcessing chunk %i of %i", counter, length(chunks)))
-        results_ = parallel::mclapply (
+        }
+        results_ = parallel::mclapply(
           x,
           .f,
           mc.cores = mc.cores
@@ -132,12 +134,11 @@ TopDown_TMTI <- function (
       }
       t_alpha = m + 1 - which(unlist(results) > alpha)[1]
     }
-
   }
 
-  if (verbose)
-    cat (
-      paste0 (
+  if (verbose) {
+    cat(
+      paste0(
         "Confidence set for the number of false hypotheses is {",
         top - t_alpha,
         ",..., ",
@@ -145,5 +146,6 @@ TopDown_TMTI <- function (
         "}\n"
       )
     )
+  }
   return(top - t_alpha)
 }

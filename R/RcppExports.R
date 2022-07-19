@@ -45,3 +45,22 @@ MakeZ_C_nsmall <- function(pvals, n, m) {
     .Call('_TMTI_MakeZ_C_nsmall', PACKAGE = 'TMTI', pvals, n, m)
 }
 
+#' Leading NA
+#'
+#' Tests a user-specified subset in a CTP, using a user-supplied local test
+#'
+#'
+#' @param LocalTest A function that returns a double in (0, 1).
+#' @param pSub A vector with the p-values of the set to be tested.
+#' @param pRest A vector containing the remaining p-values.
+#' @param alpha Double indicating the significance level.
+#' @param is_subset_sequence Logical indicating whether the supplied subset of
+#' p_values corresponds to the pSub.size() smallest overall p-values.
+#' @param EarlyStop Logical indicating whether to exit as soon as a non-significant
+#' p-value is found.
+#' @param verbose Logical indicating whether to print progress.
+#' @export
+TestSet_C <- function(LocalTest, pSub, pRest, alpha, is_subset_sequence, EarlyStop, verbose) {
+    .Call('_TMTI_TestSet_C', PACKAGE = 'TMTI', LocalTest, pSub, pRest, alpha, is_subset_sequence, EarlyStop, verbose)
+}
+

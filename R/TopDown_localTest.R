@@ -1,7 +1,7 @@
-#' TopDown localTest algorithm for estimating a 1-alpha confidence set for the number
+#' TopDown LocalTest algorithm for estimating a 1-alpha confidence set for the number
 #' of false hypotheses among a set.
 #'
-#' @param localTest A function specifying a local test.
+#' @param LocalTest A function specifying a local test.
 #' @param pvals A vector of p-values
 #' @param subset Numeric vector specifying a subset a p-values to estimate a
 #' confidence set for the number of false hypotheses for. Defaults to NULL
@@ -12,6 +12,10 @@
 #' @param verbose Logical, indicating whether or not to write out the progress.
 #' Defaults to TRUE
 #' @param mc.cores Integer specifying the number of cores to parallelize onto.
+#' @param chunksize Integer indicating the size of chunks to parallelize. E.g.,
+#' if setting chunksize = mc.cores, each time a parallel computation is set up,
+#' each worker will perform only a single task. If mc.cores > chunksize, some
+#' threads will be inactive.
 #' @param ... Additional parameters
 #'
 #' @return A lower 1-alpha bound for the number of false hypotheses among the
@@ -21,33 +25,33 @@
 #' @examples
 #' ## Simulate some p-values
 #' ## The first 10 are from false hypotheses, the next 10 are from true
-#' pvals <- c (
-#'   rbeta(10, 1, 20),  ## Mean value of .05
+#' pvals = c(
+#'   rbeta(10, 1, 20), ## Mean value of .05
 #'   runif(10)
 #' )
 #' ## Estimate the confidence set using a local Bonferroni test
-#' TopDown_localTest(function(x) {min(c(1, length(x) * min(x)))}, pvals)
-
-TopDown_localTest <- function (
-  localTest,
-  pvals,
-  subset = NULL,
-  alpha = 0.05,
-  verbose = TRUE,
-  mc.cores = 1L,
-  chunksize = 4 * mc.cores,
-  ...
-) {
-  ord     <- order(pvals)
-  pvals   <- sort(pvals)
-  m       <- length(pvals)
-  t_alpha <- 0
+#' TopDown_LocalTest(function(x) {
+#'   min(c(1, length(x) * min(x)))
+#' }, pvals)
+#'
+TopDown_LocalTest = function(LocalTest,
+                              pvals,
+                              subset = NULL,
+                              alpha = 0.05,
+                              verbose = TRUE,
+                              mc.cores = 1L,
+                              chunksize = 4 * mc.cores,
+                              ...) {
+  ord = order(pvals)
+  pvals = sort(pvals)
+  m = length(pvals)
+  t_alpha = 0
 
   if (!is.null(subset) & length(subset) < length(pvals)) {
-    counter <- 0
-    top <- length(subset)
+    counter = 0
+    top = length(subset)
     for (i in seq_along(subset)) {
-      counter <- counter + 1
+      counter = counter + 1
       if (verbose) {
         cat(
           sprintf(
@@ -55,29 +59,29 @@ TopDown_localTest <- function (
           )
         )
       }
-      # subset2 <- subset[length(subset):i]
-      subset2 <- subset[i:length(subset)]
-      p_loc <- TestSet_localTest (
-        localTest,
+      # subset2 = subset[length(subset):i]
+      subset2 = subset[i:length(subset)]
+      p_loc = TestSet_LocalTest(
+        LocalTest,
         pvals,
         subset2,
         alpha = alpha,
-        earlyStop = TRUE,
+        EarlyStop = TRUE,
         verbose = verbose,
         mc.cores = mc.cores,
         ...
       )
-      accept <- (p_loc >= alpha)
+      accept = (p_loc >= alpha)
       if (accept) {
-        t_alpha <- length(subset2)
+        t_alpha = length(subset2)
         break
       }
     }
     # if (mc.cores <= 1L) {
-    #   counter <- 0
-    #   top <- length(subset)
+    #   counter = 0
+    #   top = length(subset)
     #   for (i in seq_along(subset)) {
-    #       counter <- counter + 1
+    #       counter = counter + 1
     #       if (verbose) {
     #         cat(
     #           sprintf(
@@ -85,31 +89,31 @@ TopDown_localTest <- function (
     #           )
     #         )
     #       }
-    #       subset2 <- subset[length(subset):i]
-    #       p_loc <- TestSet_localTest (
-    #         localTest,
+    #       subset2 = subset[length(subset):i]
+    #       p_loc = TestSet_LocalTest (
+    #         LocalTest,
     #         pvals,
     #         subset2,
     #         alpha = alpha,
-    #         earlyStop = TRUE,
+    #         EarlyStop = TRUE,
     #         verbose = verbose,
     #         ...
     #       )
-    #       accept <- (p_loc >= alpha)
+    #       accept = (p_loc >= alpha)
     #       if (accept) {
-    #         t_alpha <- length(subset2)
+    #         t_alpha = length(subset2)
     #         break
     #       }
     #     }
     #   } else {
     #   .f = function (i) {
-    #     subset2 <- subset[length(subset):i]
-    #     p_loc <- TestSet_localTest (
-    #       localTest,
+    #     subset2 = subset[length(subset):i]
+    #     p_loc = TestSet_LocalTest (
+    #       LocalTest,
     #       pvals,
     #       subset2,
     #       alpha = alpha,
-    #       earlyStop = TRUE,
+    #       EarlyStop = TRUE,
     #       verbose = verbose,
     #       ...
     #     )
@@ -135,31 +139,32 @@ TopDown_localTest <- function (
     #   t_alpha = m + 1 - which(unlist(results) > alpha)[1]
     # }
   } else {
-    top <- length(pvals)
+    top = length(pvals)
     if (mc.cores <= 1) {
       for (i in 1:m) {
         if (verbose) cat("\rStep", i)
-        pvals_tilde <- pvals[i:m]
-        p_loc <- localTest(pvals_tilde)
-        accept <- (p_loc >= alpha)
+        pvals_tilde = pvals[i:m]
+        p_loc = LocalTest(pvals_tilde)
+        accept = (p_loc >= alpha)
         if (accept) {
-          t_alpha <- length(pvals_tilde)
+          t_alpha = length(pvals_tilde)
           break
         }
       }
     } else {
-      .f = function (i) {
-        pvals_tilde <- pvals[i:m]
-        p_loc <- localTest(pvals_tilde)
+      .f = function(i) {
+        pvals_tilde = pvals[i:m]
+        p_loc = LocalTest(pvals_tilde)
         p_loc
       }
       chunks = split(seq(m), ceiling(seq(m) / chunksize))
       results = list()
       counter = 1
       for (x in chunks) {
-        if (verbose)
+        if (verbose) {
           cat(sprintf("\rProcessing chunk %i of %i", counter, length(chunks)))
-        results_ = parallel::mclapply (
+        }
+        results_ = parallel::mclapply(
           x,
           .f,
           mc.cores = mc.cores
@@ -174,9 +179,9 @@ TopDown_localTest <- function (
     }
   }
 
-  if (verbose)
-    cat (
-      paste0 (
+  if (verbose) {
+    cat(
+      paste0(
         "Confidence set for the number of false hypotheses is {",
         top - t_alpha,
         ",..., ",
@@ -184,5 +189,6 @@ TopDown_localTest <- function (
         "}\n"
       )
     )
+  }
   return(top - t_alpha)
 }

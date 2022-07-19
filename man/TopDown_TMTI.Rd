@@ -60,9 +60,10 @@ of false hypotheses among a set.
 \examples{
 ## Simulate some p-values
 ## The first 10 are from false hypotheses, the next 10 are from true
-pvals <- c (
-  rbeta(10, 1, 20),  ## Mean value of .05
+pvals = c(
+  rbeta(10, 1, 20), ## Mean value of .05
   runif(10)
 )
 TopDown_TMTI(pvals)
+
 }

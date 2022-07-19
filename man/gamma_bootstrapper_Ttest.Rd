@@ -44,13 +44,14 @@ TMTI_CTP function
 Compute a list of TMTI CDFs for one- and two-sample test scenarios
 }
 \examples{
-d <- 100
-m <- 3
+d = 100
+m = 3
 
-X <- sample(LETTERS[1:2], d, replace = TRUE)
-Y <- matrix(rnorm(d * m), nrow = d, ncol = m)
-pvalues <- apply(Y, 2, function(y) t.test(y ~ X)$p.value)
+X = sample(LETTERS[1:2], d, replace = TRUE)
+Y = matrix(rnorm(d * m), nrow = d, ncol = m)
+pvalues = apply(Y, 2, function(y) t.test(y ~ X)$p.value)
 
-gammaFunctions <- gamma_bootstrapper_Ttest(Y, X)  # Produces a list of CDFs
-CTP_TMTI(pvalues, gammaList = gammaFunctions)  # Adjusted p-values using the bootstrapped CDFs
+gammaFunctions = gamma_bootstrapper_Ttest(Y, X) # Produces a list of CDFs
+CTP_TMTI(pvalues, gammaList = gammaFunctions) # Adjusted p-values using the bootstrapped CDFs
+
 }

@@ -94,3 +94,72 @@ double MakeZ_C_nsmall(NumericVector pvals, int n, int m) {
   }
   return Z;
 }
+
+
+//' Leading NA
+//'
+//' Tests a user-specified subset in a CTP, using a user-supplied local test
+//'
+//'
+//' @param LocalTest A function that returns a double in (0, 1).
+//' @param pSub A vector with the p-values of the set to be tested.
+//' @param pRest A vector containing the remaining p-values.
+//' @param alpha Double indicating the significance level.
+//' @param is_subset_sequence Logical indicating whether the supplied subset of
+//' p_values corresponds to the pSub.size() smallest overall p-values.
+//' @param EarlyStop Logical indicating whether to exit as soon as a non-significant
+//' p-value is found.
+//' @param verbose Logical indicating whether to print progress.
+//' @export
+// [[Rcpp::export]]
+double TestSet_C (
+    Function LocalTest,
+    std::vector<double> pSub,
+    std::vector<double> pRest,
+    double alpha,
+    bool is_subset_sequence,
+    bool EarlyStop,
+    bool verbose
+) {
+  int n = pRest.size();
+  int n2 = pSub.size();
+  double p;
+  double currentMax = 0;
+
+  if (verbose) {
+    for (int i = 0; i < n; i++) {
+      Rcout << "\r" << i + 1 << " of " << n;
+      auto it = pSub.begin() + n2;
+      pSub.insert(it, pRest.back());
+      if (not is_subset_sequence) {
+        std::partial_sort(pSub.begin(), pSub.begin() + n2 + 1, pSub.end());
+      }
+      pRest.pop_back();
+      p = *REAL(LocalTest(pSub));
+      if (p > currentMax) {
+        currentMax = p;
+      }
+      if ((p > alpha) & (EarlyStop)) {
+        break;
+      }
+    }
+  } else {
+    for (int i = 0; i < n; i++) {
+      auto it = pSub.begin() + n2;
+      pSub.insert(it, pRest.back());
+      if (not is_subset_sequence) {
+        std::partial_sort(pSub.begin(), pSub.begin() + n2 + 1, pSub.end());
+      }
+      pRest.pop_back();
+      p = *REAL(LocalTest(pSub));
+      if (p > currentMax) {
+        currentMax = p;
+      }
+      if ((p > alpha) & (EarlyStop)) {
+        break;
+      }
+    }
+  }
+
+  return currentMax;
+}

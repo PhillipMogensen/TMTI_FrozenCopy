@@ -24,9 +24,9 @@
 #' @examples
 #' ## Simulate some p-values
 #' ## The first 10 are from false hypotheses, the next 10 are from true
-#' pvals <- c (
-#'     rbeta(10, 1, 20),  ## Mean value of .05
-#'     runif(10)
+#' pvals = c(
+#'   rbeta(10, 1, 20), ## Mean value of .05
+#'   runif(10)
 #' )
 #' TMTI(pvals)
 #'
@@ -38,80 +38,82 @@
 #' @useDynLib TMTI
 #' @import Rcpp
 #' @importFrom Rcpp evalCpp
-TMTI <- function (
-  pvals,
-  n     = Inf,
-  tau   = NULL,
-  K     = NULL,
-  gamma = NULL,
-  B = 1e3,
-  m_max = 100,
-  is.sorted = FALSE,
-  ...
-) {
-  if (!is.null(tau) & !is.null(K))
+TMTI = function(pvals,
+                 n = Inf,
+                 tau = NULL,
+                 K = NULL,
+                 gamma = NULL,
+                 B = 1e3,
+                 m_max = 100,
+                 is.sorted = FALSE,
+                 ...) {
+  if (!is.null(tau) & !is.null(K)) {
     stop("At most one of tau and K can be non NULL")
+  }
 
-  m <- length(pvals)
+  m = length(pvals)
 
   if (m == 1) {
-    return (pvals)
+    return(pvals)
   }
 
   if (is.sorted) {
-    if (!is.null(tau))
-      pvals = if(sum(pvals <= tau) > 0) pvals[pvals <= tau] else pvals[1]
-    else if (!is.null(K))
+    if (!is.null(tau)) {
+      pvals = if (sum(pvals <= tau) > 0) pvals[pvals <= tau] else pvals[1]
+    } else if (!is.null(K)) {
       pvals = pvals[1:K]
+    }
   } else {
-    if (!is.null(tau))
-      pvals = if(sum(pvals <= tau) > 0) sort(pvals[pvals <= tau]) else min(pvals)
-    else if (!is.null(K))
+    if (!is.null(tau)) {
+      pvals = if (sum(pvals <= tau) > 0) sort(pvals[pvals <= tau]) else min(pvals)
+    } else if (!is.null(K)) {
       pvals = sort(pvals)[1:K]
-    else
+    } else {
       pvals = pvals[order(pvals)]
+    }
   }
 
   if (n >= m) {
     Z = TMTI::MakeZ_C(pvals, m)
   } else {
     # Y = TMTI::MakeY_C(pvals = pvals, m)
-    # Z <- Y[.GetMinima(Y, n)]
+    # Z = Y[.GetMinima(Y, n)]
     Z = MakeZ_C_nsmall(pvals, n, m)
   }
 
 
 
   if (!is.null(gamma)) {
-    return (gamma(Z))
+    return(gamma(Z))
   } else if (m <= m_max) {
-    if (!is.null(K) & !is.null(tau)) stop("Please supply only one of tau and K")
-    else if (!is.null(K)) gamma <- function (x) rtTMTI_CDF(x, m, K)
-    else if (!is.null(tau)) gamma <- function (x) tTMTI_CDF(x, m, tau)
-    else gamma <- function (x) TMTI_CDF(x, m)
-  } else if(is.null(gamma)) {
-    gamma <- gamma_bootstrapper(m, B = B, tau = tau, K = K, n = n, ...)
+    if (!is.null(K) & !is.null(tau)) {
+      stop("Please supply only one of tau and K")
+    } else if (!is.null(K)) {
+      gamma = function(x) rtTMTI_CDF(x, m, K)
+    } else if (!is.null(tau)) {
+      gamma = function(x) tTMTI_CDF(x, m, tau)
+    } else {
+      gamma = function(x) TMTI_CDF(x, m)
+    }
+  } else if (is.null(gamma)) {
+    gamma = gamma_bootstrapper(m, B = B, tau = tau, K = K, n = n, ...)
   }
 
   gamma(Z)
 }
 
-tTMTI <- function (
-  pvals,
-  tau,
-  n = Inf,
-  gamma = NULL,
-  ...
-) {
+tTMTI = function(pvals,
+                  tau,
+                  n = Inf,
+                  gamma = NULL,
+                  ...) {
   TMTI(pvals, n = n, tau = tau, K = NULL, gamma = gamma, ...)
 }
 
-rtTMTI <- function (
-  pvals,
-  K,
-  n = Inf,
-  gamma = NULL,
-  ...
-) {
+rtTMTI = function(pvals,
+                   K,
+                   n = Inf,
+                   gamma = NULL,
+                   ...) {
   TMTI(pvals, n = n, tau = NULL, K = K, gamma = gamma, ...)
 }

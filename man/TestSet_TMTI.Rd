@@ -10,7 +10,7 @@ TestSet_TMTI(
   alpha = 0.05,
   tau = NULL,
   K = NULL,
-  earlyStop = FALSE,
+  EarlyStop = FALSE,
   verbose = FALSE,
   gammalist = NULL,
   is.sorted = FALSE,
@@ -31,7 +31,7 @@ or rtTMTI. Defaults to NULL}
 \item{K}{Integer; The number of p-values to use if using rtTMTI. Set to NULL
 for TMTI or tTMTI. Defaults to NULL.}
 
-\item{earlyStop}{Logical; set to TRUE to stop as soon as a hypothesis can be
+\item{EarlyStop}{Logical; set to TRUE to stop as soon as a hypothesis can be
 accepted at level alpha. This speeds up the procedure, but now only provides
 lower bounds on the p-values for the global test.}
 
@@ -55,9 +55,9 @@ Test a subset of hypotheses in its closure using the TMTI
 }
 \examples{
 ## Simulate p-values; 10 from false hypotheses, 10 from true
-pvals <- sort(c (
-    rbeta(10, 1, 20),  # Mean value of .1
-    runif(10)
+pvals = sort(c(
+  rbeta(10, 1, 20), # Mean value of .1
+  runif(10)
 ))
 ## Test whether the highest 10 contain any false hypotheses
 TestSet_TMTI(pvals, subset = 11:20)

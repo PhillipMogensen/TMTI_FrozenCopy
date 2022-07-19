@@ -33,7 +33,7 @@ Function to bootstrap the Cumulative Distribution Functions (CDFs) of the TMTI s
 }
 \examples{
 ## Get an approximation of gamma
-gamma_function <- gamma_bootstrapper(10)
+gamma_function = gamma_bootstrapper(10)
 ## Evaluate it in a number, say .2
 gamma_function(.2)
 }

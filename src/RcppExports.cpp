@@ -47,11 +47,29 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// TestSet_C
+double TestSet_C(Function LocalTest, std::vector<double> pSub, std::vector<double> pRest, double alpha, bool is_subset_sequence, bool EarlyStop, bool verbose);
+RcppExport SEXP _TMTI_TestSet_C(SEXP LocalTestSEXP, SEXP pSubSEXP, SEXP pRestSEXP, SEXP alphaSEXP, SEXP is_subset_sequenceSEXP, SEXP EarlyStopSEXP, SEXP verboseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Function >::type LocalTest(LocalTestSEXP);
+    Rcpp::traits::input_parameter< std::vector<double> >::type pSub(pSubSEXP);
+    Rcpp::traits::input_parameter< std::vector<double> >::type pRest(pRestSEXP);
+    Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
+    Rcpp::traits::input_parameter< bool >::type is_subset_sequence(is_subset_sequenceSEXP);
+    Rcpp::traits::input_parameter< bool >::type EarlyStop(EarlyStopSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(TestSet_C(LocalTest, pSub, pRest, alpha, is_subset_sequence, EarlyStop, verbose));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_TMTI_MakeZ_C", (DL_FUNC) &_TMTI_MakeZ_C, 2},
     {"_TMTI_MakeY_C", (DL_FUNC) &_TMTI_MakeY_C, 2},
     {"_TMTI_MakeZ_C_nsmall", (DL_FUNC) &_TMTI_MakeZ_C_nsmall, 3},
+    {"_TMTI_TestSet_C", (DL_FUNC) &_TMTI_TestSet_C, 7},
     {NULL, NULL, 0}
 };
 

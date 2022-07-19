@@ -24,4 +24,5 @@ not be used.
 }
 \examples{
 tTMTI_CDF(0.05, 100, 0.05)
+
 }

@@ -20,108 +20,110 @@
 #' @export
 #'
 #' @examples
-#' d <- 100
-#' m <- 3
+#' d = 100
+#' m = 3
 #'
-#' X <- sample(LETTERS[1:2], d, replace = TRUE)
-#' Y <- matrix(rnorm(d * m), nrow = d, ncol = m)
-#' pvalues <- apply(Y, 2, function(y) t.test(y ~ X)$p.value)
+#' X = sample(LETTERS[1:2], d, replace = TRUE)
+#' Y = matrix(rnorm(d * m), nrow = d, ncol = m)
+#' pvalues = apply(Y, 2, function(y) t.test(y ~ X)$p.value)
 #'
-#' gammaFunctions <- gamma_bootstrapper_Ttest(Y, X)  # Produces a list of CDFs
-#' CTP_TMTI(pvalues, gammaList = gammaFunctions)  # Adjusted p-values using the bootstrapped CDFs
-
-gamma_bootstrapper_Ttest <- function (
-  Y,
-  X = NULL,
-  n = Inf,
-  B = 1e3,
-  mc.cores = 1L,
-  tau = NULL,
-  K = NULL
-) {
+#' gammaFunctions = gamma_bootstrapper_Ttest(Y, X) # Produces a list of CDFs
+#' CTP_TMTI(pvalues, gammaList = gammaFunctions) # Adjusted p-values using the bootstrapped CDFs
+#'
+gamma_bootstrapper_Ttest = function(Y,
+                                     X = NULL,
+                                     n = Inf,
+                                     B = 1e3,
+                                     mc.cores = 1L,
+                                     tau = NULL,
+                                     K = NULL) {
   if (!is.null(X)) {
-    stopifnot (
+    stopifnot(
       "X contains more than two unique values" = length(unique(X)) <= 2
     )
 
-    .make_TMTI <- function (subset) {
-      X2 <- sample(X)
+    .make_TMTI = function(subset) {
+      X2 = sample(X)
 
-      pvals <- sapply (
+      pvals = sapply(
         subset,
-        function (i) {
+        function(i) {
           stats::t.test(Y[, i] ~ X2)$p.value
         }
       )
       m = length(pvals)
-      if (!is.null(tau) & !is.null(K))
+      if (!is.null(tau) & !is.null(K)) {
         stop("At most one of tau and K can be non NULL")
-      else if (!is.null(tau))
-        pvals = if(sum(pvals <= tau) > 0) sort(pvals[pvals <= tau]) else min(pvals)
-      else if (!is.null(K))
+      } else if (!is.null(tau)) {
+        pvals = if (sum(pvals <= tau) > 0) sort(pvals[pvals <= tau]) else min(pvals)
+      } else if (!is.null(K)) {
         pvals = sort(pvals)[1:K]
-      else
+      } else {
         pvals = pvals[order(pvals)]
+      }
 
       out = TMTI::MakeY_C(pvals = pvals, m)
 
       out[.GetMinima(out, n = n)]
     }
-  } else (
-    .make_TMTI <- function (subset) {
-      signs <- matrix (
-        sample(c(-1, 1),
-               nrow(Y) * ncol(Y),
-               replace = T),
-        nrow = nrow(Y),
-        ncol = ncol(Y)
-      )
+  } else {
+    (
+      .make_TMTI = function(subset) {
+        signs = matrix(
+          sample(c(-1, 1),
+            nrow(Y) * ncol(Y),
+            replace = T
+          ),
+          nrow = nrow(Y),
+          ncol = ncol(Y)
+        )
 
-      pvals <- sapply (
-        subset,
-        function (i) {
-          stats::t.test(signs[, i] * Y[, i])$p.value
+        pvals = sapply(
+          subset,
+          function(i) {
+            stats::t.test(signs[, i] * Y[, i])$p.value
+          }
+        )
+        m = length(pvals)
+        if (!is.null(tau) & !is.null(K)) {
+          stop("At most one of tau and K can be non NULL")
+        } else if (!is.null(tau)) {
+          pvals = if (sum(pvals <= tau) > 0) sort(pvals[pvals <= tau]) else min(pvals)
+        } else if (!is.null(K)) {
+          pvals = sort(pvals)[1:K]
+        } else {
+          pvals = pvals[order(pvals)]
         }
-      )
-      m = length(pvals)
-      if (!is.null(tau) & !is.null(K))
-        stop("At most one of tau and K can be non NULL")
-      else if (!is.null(tau))
-        pvals = if(sum(pvals <= tau) > 0) sort(pvals[pvals <= tau]) else min(pvals)
-      else if (!is.null(K))
-        pvals = sort(pvals)[1:K]
-      else
-        pvals = pvals[order(pvals)]
 
-      out = TMTI::MakeY_C(pvals = pvals, m)
+        out = TMTI::MakeY_C(pvals = pvals, m)
 
-      out[.GetMinima(out, n = n)]
-    }
-  )
+        out[.GetMinima(out, n = n)]
+      })
+  }
 
-  lapply (
+  lapply(
     1:ncol(Y),
-    function (i) {
+    function(i) {
       cat("\rComputing gamma function for level ", i, " of ", ncol(Y))
-      if(i == 1)
-        function (x) x
-      else {
-        forCDF <- unlist(parallel::mclapply (
+      if (i == 1) {
+        function(x) x
+      } else {
+        forCDF = unlist(parallel::mclapply(
           1:B,
-          function (j) .make_TMTI(sample(1:ncol(Y), i)),
+          function(j) .make_TMTI(sample(1:ncol(Y), i)),
           mc.cores = mc.cores
         ))
 
-        function (x) mean(forCDF <= x)
+        function(x) mean(forCDF <= x)
       }
     }
   )
 }
 
-if(F) {
-  d <- 100
-  m <- 3
-  X <- sample(LETTERS[1:2], d, replace = T)
-  Y <- matrix(rnorm(d * m), nrow = d, ncol = m)
+if (F) {
+  d = 100
+  m = 3
+  X = sample(LETTERS[1:2], d, replace = T)
+  Y = matrix(rnorm(d * m), nrow = d, ncol = m)
   gamma_bootstrapper_Ttest(Y)
 }

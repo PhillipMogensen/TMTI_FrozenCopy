@@ -18,42 +18,41 @@
 #'
 #' @examples
 #' ## Get an approximation of gamma
-#' gamma_function <- gamma_bootstrapper(10)
+#' gamma_function = gamma_bootstrapper(10)
 #' ## Evaluate it in a number, say .2
 #' gamma_function(.2)
-gamma_bootstrapper <- function (
-  m,
-  n = Inf,
-  B = 1e3,
-  mc.cores = 1L,
-  tau = NULL,
-  K = NULL
-) {
-  if (!is.finite(n)) .GetMinima <- function(y, n) which.min(y)
+gamma_bootstrapper = function(m,
+                               n = Inf,
+                               B = 1e3,
+                               mc.cores = 1L,
+                               tau = NULL,
+                               K = NULL) {
+  if (!is.finite(n)) .GetMinima = function(y, n) which.min(y)
 
-  if (m == 1)
+  if (m == 1) {
     return(identity)
-  else if (m < 1)
+  } else if (m < 1) {
     stop("Please supply a positive integer for m")
-  else {
+  } else {
     # if (log.p)
-    #   xtrans <- log
+    #   xtrans = log
     # else
-    #   xtrans <- identity
+    #   xtrans = identity
 
-    forCDF <- parallel::mclapply (
+    forCDF = parallel::mclapply(
       1:B,
-      function (i) {
-        pvals <- sort(stats::runif(m))
+      function(i) {
+        pvals = sort(stats::runif(m))
 
-        if (!is.null(tau) & !is.null(K))
+        if (!is.null(tau) & !is.null(K)) {
           stop("At most one of tau and K can be non NULL")
-        else if (!is.null(tau))
-          pvals = if(sum(pvals <= tau) > 0) sort(pvals[pvals <= tau]) else min(pvals)
-        else if (!is.null(K))
+        } else if (!is.null(tau)) {
+          pvals = if (sum(pvals <= tau) > 0) sort(pvals[pvals <= tau]) else min(pvals)
+        } else if (!is.null(K)) {
           pvals = sort(pvals)[1:K]
-        else
+        } else {
           pvals = pvals[order(pvals)]
+        }
 
         if (n >= m) {
           Z = TMTI::MakeZ_C(pvals, m)
@@ -64,8 +63,8 @@ gamma_bootstrapper <- function (
       mc.cores = mc.cores
     )
 
-    return (
-      function (x) mean(forCDF < x, na.rm = T)
+    return(
+      function(x) mean(forCDF < x, na.rm = T)
     )
   }
 }

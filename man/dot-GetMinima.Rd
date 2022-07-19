@@ -20,11 +20,12 @@ Helper function to return the first local minimum that is strictly smaller than 
 }
 \examples{
 ## Simulate some p-values
-p <- runif(10)
+p = runif(10)
 ## Generate the transformations
-Y <- pbeta(sort(p), 1:10, 10 + 1 - 1:10)
+Y = pbeta(sort(p), 1:10, 10 + 1 - 1:10)
 ## Get the first local minimum
 .GetMinima(Y, 1)
 ## Get the global minimum:
-.GetMinima(Y, Inf)  # Note, equivalent to which.min(Y)
+.GetMinima(Y, Inf) # Note, equivalent to which.min(Y)
+
 }
