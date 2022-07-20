@@ -42,18 +42,18 @@ TestSet_LocalTest = function(LocalTest,
                               mc.cores = 1L,
                               chunksize = 4 * mc.cores,
                               is.sorted = FALSE,
+                              pRest = NULL,
                               ...) {
+  is_subset_sequence = all(seq_along(subset) == subset)
+
   m = length(pvals)
   m2 = length(subset)
-  if (is.sorted) {
-    pSub = pvals[subset]
-    pRest = pvals[-subset]
-  } else {
-    pSub = sort(pvals[subset])
-    pRest = sort(pvals[-subset])
-  }
+  if (!is.sorted)
+    pvals = sort(pvals)
 
-  is_subset_sequence = all(seq_along(subset) == subset)
+  pSub = pvals[subset]
+  # if (is.null(pRest))
+  pRest = pvals[-subset]
 
   p_first = LocalTest(pSub)
   if (p_first > alpha & EarlyStop) {

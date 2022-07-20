@@ -182,6 +182,7 @@ adjust_LocalTest = function(LocalTest,
             verbose = verbose,
             is.sorted = is.sorted,
             mc.cores = 1,
+            ...
           )
         },
         mc.cores = mc.cores

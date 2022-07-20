@@ -14,6 +14,7 @@ TestSet_LocalTest(
   mc.cores = 1L,
   chunksize = 4 * mc.cores,
   is.sorted = FALSE,
+  pRest = NULL,
   ...
 )
 }
