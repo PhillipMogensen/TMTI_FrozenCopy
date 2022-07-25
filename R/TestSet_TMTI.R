@@ -12,9 +12,14 @@
 #' accepted at level alpha. This speeds up the procedure, but now only provides
 #' lower bounds on the p-values for the global test.
 #' @param verbose Logical; set to TRUE to print progress.
-#' @param gammalist List of functions. Must be such that the i'th element
+#' @param gammaList List of functions. Must be such that the i'th element
 #' is the gamma function for sets of size i. Set to NULL to bootstrap the
 #' functions assuming independence. Defaults to NULL.
+#' @param mc.cores Number of cores to parallelize onto.
+#' @param chunksize Integer indicating the size of chunks to parallelize. E.g.,
+#' if setting chunksize = mc.cores, each time a parallel computation is set up,
+#' each worker will perform only a single task. If mc.cores > chunksize, some
+#' threads will be inactive.
 #' @param is.sorted Logical, indicating the p-values are pre-sorted. Defaults
 #' to FALSE.
 #' @param ... Additional arguments to be passed onto TMTI()
@@ -31,6 +36,7 @@
 #' ))
 #' ## Test whether the highest 10 contain any false hypotheses
 #' TestSet_TMTI(pvals, subset = 11:20)
+
 TestSet_TMTI = function(pvals,
                          subset,
                          alpha = 0.05,
@@ -38,91 +44,120 @@ TestSet_TMTI = function(pvals,
                          K = NULL,
                          EarlyStop = FALSE,
                          verbose = FALSE,
-                         gammalist = NULL,
+                         gammaList = NULL,
+                         mc.cores = 1L,
+                         chunksize = 4 * mc.cores,
                          is.sorted = FALSE,
                          ...) {
-  m = length(pvals)
-  m2 = length(subset)
-  if (is.sorted) {
-    pSub = pvals[subset]
-    pRest = pvals[-subset]
-  } else {
-    pSub = sort(pvals[subset])
-    pRest = sort(pvals[-subset])
+  LocalTest = function (x) {
+    TMTI::TMTI(x, tau = tau, K = K, gamma = gammaList[[length(x)]])
   }
-
-  out = list()
-
-  if (!is.null(K) & length(K) < m) {
-    K = rep(K, length.out = m)
-  }
-
-  is_subset_sequence = all(seq_along(subset) == subset)
-
-  LocalTest = function(x) {
-    TMTI(
-      x,
-      tau = tau,
-      K   = K[length(x)],
-      gamma = gammalist[[length(x)]],
-      ...
-    )
-  }
-
-  p_first = LocalTest(pSub)
-  if (p_first > alpha & EarlyStop) {
-    return(p_first)
-  }
-
-  out = TestSet_C(
+  TMTI::TestSet_LocalTest (
     LocalTest = LocalTest,
-    pSub = pSub,
-    pRest = pRest,
+    pvals = pvals,
+    subset = subset,
     alpha = alpha,
-    is_subset_sequence = is_subset_sequence,
+    is.sorted = is.sorted,
     EarlyStop = EarlyStop,
-    verbose = verbose
+    verbose = verbose,
+    mc.cores = mc.cores,
+    chunksize = chunksize,
+    ...
   )
-
-  max(out, p_first)
-
-  # pfirst = TMTI(pSub, tau = tau, K = K[m2], gamma = gammalist[[m2]], ...)
-  # out[[1]] = c(
-  #   "p"     = pfirst,
-  #   "layer" = 0,
-  #   "Accept" = (pfirst > alpha)
-  # )
-  #
-  # if (EarlyStop & out[[1]][3]) {
-  #   return(out[[1]][1])
-  # }
-  #
-  # stepCounter = 0
-  #
-  # for (i in length(pRest):1) {
-  #   stepCounter = stepCounter + 1
-  #   if (verbose) {
-  #     cat("\rStep", stepCounter, " of ", length(pRest))
-  #   }
-  #   # ptilde = c(pSub, pRest[length(pRest):i])
-  #   ptilde = c(pSub, pRest[i:length(pRest)])
-  #   pp = TMTI (
-  #     ptilde,
-  #     tau = tau,
-  #     K   = K[length(ptilde)],
-  #     gamma = gammalist[[length(ptilde)]],
-  #     ...
-  #   )
-  #   out[[stepCounter + 1]] = c (
-  #     "p" = pp,
-  #     "layer" = stepCounter,
-  #     "Accept" = (pp > alpha)
-  #   )
-  #
-  #   if (EarlyStop & out[[stepCounter + 1]][3])
-  #     break
-  # }
-  #
-  # out = do.call("rbind", out)
-  # max(out[, 1])
 }
+
+# TestSet_TMTI = function(pvals,
+#                          subset,
+#                          alpha = 0.05,
+#                          tau = NULL,
+#                          K = NULL,
+#                          EarlyStop = FALSE,
+#                          verbose = FALSE,
+#                          gammalist = NULL,
+#                          is.sorted = FALSE,
+#                          ...) {
+#   m = length(pvals)
+#   m2 = length(subset)
+#   if (is.sorted) {
+#     pSub = pvals[subset]
+#     pRest = pvals[-subset]
+#   } else {
+#     pSub = sort(pvals[subset])
+#     pRest = sort(pvals[-subset])
+#   }
+#
+#   out = list()
+#
+#   if (!is.null(K) & length(K) < m) {
+#     K = rep(K, length.out = m)
+#   }
+#
+#   is_subset_sequence = all(seq_along(subset) == subset)
+#
+#   LocalTest = function(x) {
+#     TMTI(
+#       x,
+#       tau = tau,
+#       K   = K[length(x)],
+#       gamma = gammalist[[length(x)]],
+#       ...
+#     )
+#   }
+#
+#   p_first = LocalTest(pSub)
+#   if (p_first > alpha & EarlyStop) {
+#     return(p_first)
+#   }
+#
+#   out = TestSet_C(
+#     LocalTest = LocalTest,
+#     pSub = pSub,
+#     pRest = pRest,
+#     alpha = alpha,
+#     is_subset_sequence = is_subset_sequence,
+#     EarlyStop = EarlyStop,
+#     verbose = verbose
+#   )
+#
+#   max(out, p_first)
+#
+#   # pfirst = TMTI(pSub, tau = tau, K = K[m2], gamma = gammalist[[m2]], ...)
+#   # out[[1]] = c(
+#   #   "p"     = pfirst,
+#   #   "layer" = 0,
+#   #   "Accept" = (pfirst > alpha)
+#   # )
+#   #
+#   # if (EarlyStop & out[[1]][3]) {
+#   #   return(out[[1]][1])
+#   # }
+#   #
+#   # stepCounter = 0
+#   #
+#   # for (i in length(pRest):1) {
+#   #   stepCounter = stepCounter + 1
+#   #   if (verbose) {
+#   #     cat("\rStep", stepCounter, " of ", length(pRest))
+#   #   }
+#   #   # ptilde = c(pSub, pRest[length(pRest):i])
+#   #   ptilde = c(pSub, pRest[i:length(pRest)])
+#   #   pp = TMTI (
+#   #     ptilde,
+#   #     tau = tau,
+#   #     K   = K[length(ptilde)],
+#   #     gamma = gammalist[[length(ptilde)]],
+#   #     ...
+#   #   )
+#   #   out[[stepCounter + 1]] = c (
+#   #     "p" = pp,
+#   #     "layer" = stepCounter,
+#   #     "Accept" = (pp > alpha)
+#   #   )
+#   #
+#   #   if (EarlyStop & out[[stepCounter + 1]][3])
+#   #     break
+#   # }
+#   #
+#   # out = do.call("rbind", out)
+#   # max(out[, 1])
+# }

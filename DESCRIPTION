@@ -8,6 +8,6 @@ Description: Methods for computing joint tests, controlling the Familywise Error
 License: MIT + file LICENSE
 Encoding: UTF-8
 RoxygenNote: 7.2.0
-Imports: dplyr, stats, Rcpp
+Imports: stats, Rcpp
 Suggests: parallel
 LinkingTo: Rcpp

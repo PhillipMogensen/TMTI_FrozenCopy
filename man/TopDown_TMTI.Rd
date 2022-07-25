@@ -15,6 +15,7 @@ TopDown_TMTI(
   K = NULL,
   is.sorted = FALSE,
   mc.cores = 1L,
+  chunksize = 4 * mc.cores,
   ...
 )
 }
@@ -45,7 +46,12 @@ then either TMTI (default) or tTMTI is used.}
 \item{is.sorted}{Logical, indicating whether the supplied p-values are already
 is.sorted. Defaults to FALSE.}
 
-\item{mc.cores}{Integer specifying the number of cores to parallelize onto.}
+\item{mc.cores}{Number of cores to parallelize onto.}
+
+\item{chunksize}{Integer indicating the size of chunks to parallelize. E.g.,
+if setting chunksize = mc.cores, each time a parallel computation is set up,
+each worker will perform only a single task. If mc.cores > chunksize, some
+threads will be inactive.}
 
 \item{...}{Additional parameters}
 }

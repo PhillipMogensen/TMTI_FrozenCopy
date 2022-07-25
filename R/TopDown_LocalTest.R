@@ -59,7 +59,6 @@ TopDown_LocalTest = function(LocalTest,
           )
         )
       }
-      # subset2 = subset[length(subset):i]
       subset2 = subset[i:length(subset)]
       p_loc = TestSet_LocalTest(
         LocalTest,
@@ -77,67 +76,6 @@ TopDown_LocalTest = function(LocalTest,
         break
       }
     }
-    # if (mc.cores <= 1L) {
-    #   counter = 0
-    #   top = length(subset)
-    #   for (i in seq_along(subset)) {
-    #       counter = counter + 1
-    #       if (verbose) {
-    #         cat(
-    #           sprintf(
-    #             "\rOuter step %i of %i\n", counter, length(subset)
-    #           )
-    #         )
-    #       }
-    #       subset2 = subset[length(subset):i]
-    #       p_loc = TestSet_LocalTest (
-    #         LocalTest,
-    #         pvals,
-    #         subset2,
-    #         alpha = alpha,
-    #         EarlyStop = TRUE,
-    #         verbose = verbose,
-    #         ...
-    #       )
-    #       accept = (p_loc >= alpha)
-    #       if (accept) {
-    #         t_alpha = length(subset2)
-    #         break
-    #       }
-    #     }
-    #   } else {
-    #   .f = function (i) {
-    #     subset2 = subset[length(subset):i]
-    #     p_loc = TestSet_LocalTest (
-    #       LocalTest,
-    #       pvals,
-    #       subset2,
-    #       alpha = alpha,
-    #       EarlyStop = TRUE,
-    #       verbose = verbose,
-    #       ...
-    #     )
-    #     p_loc
-    #   }
-    #   chunks = split(seq_along(subset), ceiling(seq_along(subset) / mc.cores))
-    #   results = list()
-    #   counter = 1
-    #   for (x in chunks) {
-    #     if (verbose)
-    #       cat(sprintf("\rProcessing chunk %i of %i", counter, length(chunks)))
-    #     results_ = parallel::mclapply (
-    #       x,
-    #       .f,
-    #       mc.cores = mc.cores
-    #     )
-    #     results[[counter]] = unlist(results_)
-    #     if (any(unlist(results) > alpha)) {
-    #       break
-    #     }
-    #     counter = counter + 1
-    #   }
-    #   t_alpha = m + 1 - which(unlist(results) > alpha)[1]
-    # }
   } else {
     top = length(pvals)
     if (mc.cores <= 1) {

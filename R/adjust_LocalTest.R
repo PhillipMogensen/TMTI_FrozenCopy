@@ -28,6 +28,8 @@
 #' adjust each p-value, but depth-first parallelization potentially finishes
 #' faster if using early stopping (EarlyStop = TRUE) and very few hypotheses
 #' can be rejected.
+#' @param AdjustAll Logical, indicating whether to adjust all p-values (TRUE)
+#' or only those that are marginally significant (FALSE). Defaults to FALSE.
 #' @param ... Additional arguments
 #'
 #' @return a data.frame containing adjusted p-values and their respective indices.
@@ -51,14 +53,19 @@ adjust_LocalTest = function(LocalTest,
                              chunksize = 4 * mc.cores,
                              direction = "increasing",
                              parallel.direction = "breadth",
+                             AdjustAll = FALSE,
                              ...) {
-  m2 = sum(pvals <= alpha)
+  if (AdjustAll) {
+    m2 = length(pvals)
+  } else {
+    m2 = sum(pvals <= alpha)
 
-  if (m2 <= 0) {
-    stop("There are no p-values that are marginally significant at level alpha")
-  }
-  if (verbose) {
-    cat(sprintf("\rThere are %i marginally significant p-values to adjust", m2))
+    if (m2 <= 0) {
+      stop("There are no p-values that are marginally significant at level alpha")
+    }
+    if (verbose) {
+      cat(sprintf("\rThere are %i marginally significant p-values to adjust", m2))
+    }
   }
 
   if (is.sorted) {
@@ -197,30 +204,4 @@ adjust_LocalTest = function(LocalTest,
       )
     )
   }
-  # else {
-  #   chunks = split(seq(m2), ceiling(seq(m2) / chunksize))
-  #   results = list()
-  #   counter = 1
-  #   for (x in chunks) {
-  #     if (verbose)
-  #       cat(sprintf("\rProcessing chunk %i of %i", counter, length(chunks)))
-  #     results_ = parallel::mclapply (
-  #       x,
-  #       .f,
-  #       mc.cores = mc.cores
-  #     )
-  #     results[[counter]] = unlist(results_)
-  #     if (any(unlist(results) > alpha)) {
-  #       message(paste0("an adjusted p-value in chunk", counter, " was above alpha, implying that the remaining chunks are all above alpha. Exiting"))
-  #       break
-  #     }
-  #     counter = counter + 1
-  #   }
-  #   return (
-  #     data.frame (
-  #       "p"     = unlist(results),
-  #       "index" = ord[1:length(unlist(results))]
-  #     )
-  #   )
-  # }
 }

@@ -17,6 +17,8 @@ adjust_TMTI(
   verbose = FALSE,
   mc.cores = 1L,
   chunksize = 4 * mc.cores,
+  direction = "increasing",
+  parallel.direction = "breadth",
   ...
 )
 }
@@ -51,6 +53,20 @@ cannot stop early and may then be slower than with mc.cores = 1.}
 if setting chunksize = mc.cores, each time a parallel computation is set up,
 each worker will perform only a single task. If mc.cores > chunksize, some
 threads will be inactive.}
+
+\item{direction}{string that is equal to either "increasing"/"i" or "decreasing"/d.
+Determines the search direction. "increasing" computes the exact adjusted p-value
+for all those hypotheses that can be rejected (while controlling the FWER),
+but is potentially slower than "decreasing". "decreasing" computes on the largest
+p-value of those that can be rejected, but identifies all hypotheses that can
+be rejected. Defaults to "increasing" and has no effect when mc.cores > 1.}
+
+\item{parallel.direction}{A string that is either "breadth" or "depth"
+(or abbreviated to "b" or "d), indicating in which direction to parallelize.
+Breadth-first parallelization uses a more efficient C++ implementation to
+adjust each p-value, but depth-first parallelization potentially finishes
+faster if using early stopping (EarlyStop = TRUE) and very few hypotheses
+can be rejected.}
 
 \item{...}{Additional arguments}
 }

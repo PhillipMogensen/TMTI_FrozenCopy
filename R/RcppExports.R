@@ -64,3 +64,17 @@ TestSet_C <- function(LocalTest, pSub, pRest, alpha, is_subset_sequence, EarlySt
     .Call('_TMTI_TestSet_C', PACKAGE = 'TMTI', LocalTest, pSub, pRest, alpha, is_subset_sequence, EarlyStop, verbose)
 }
 
+#' Leading NA
+#'
+#' Tests a user-specified subset in a CTP, using a user-supplied local test
+#'
+#'
+#' @param LocalTest A function that returns a double in (0, 1).
+#' @param f A function that iterates LocalTest over the relevant test tree.
+#' In practice, this is called as TestSet_C.
+#' @param pvals A vector of p-values.
+#' @export
+FullCTP_C <- function(LocalTest, f, pvals) {
+    .Call('_TMTI_FullCTP_C', PACKAGE = 'TMTI', LocalTest, f, pvals)
+}
+

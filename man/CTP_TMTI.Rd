@@ -9,11 +9,8 @@ CTP_TMTI(
   alpha = 0.05,
   B = 1000,
   gammaList = NULL,
-  log.p = FALSE,
   tau = NULL,
   K = NULL,
-  OnlySignificant = TRUE,
-  progress = FALSE,
   is.sorted = FALSE,
   ...
 )
@@ -31,20 +28,11 @@ or if length(pvals) <= 100. Defaults to 1000}
 functions will be approximated via bootstrap, assuming independence. Defaults
 to NULL.}
 
-\item{log.p}{Logical, indicating whether to compute Y's on log-scale.
-Defaults to FALSE}
-
 \item{tau}{Numerical (in (0,1)); threshold to use in tTMTI. If set to NULL,
 then either TMTI (default) or rtTMTI is used.}
 
 \item{K}{Integer; Number of smallest p-values to use in rtTMTI. If se to NULL,
 then either TMTI (default) or tTMTI is used.}
-
-\item{OnlySignificant}{Logical, indicating whether to only compute adjusted
-p-values for the marginally significant p-values (TRUE) or for all observed
-p-values (FALSE). Defaults to TRUE.}
-
-\item{progress}{Logical, indicating whether or not to print progress}
 
 \item{is.sorted}{Logical, indicating the p-values are pre-sorted. Defaults
 to FALSE.}

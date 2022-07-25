@@ -62,9 +62,16 @@ gamma_bootstrapper_Ttest = function(Y,
         pvals = pvals[order(pvals)]
       }
 
-      out = TMTI::MakeY_C(pvals = pvals, m)
+      if (n < m - 1)
+        out = TMTI::MakeZ_C_nsmall(pvals, n, m)
+      else
+        out = TMTI::MakeZ_C(pvals, m)
 
-      out[.GetMinima(out, n = n)]
+      return (out)
+
+      # out = TMTI::MakeY_C(pvals = pvals, m)
+      #
+      # out[.GetMinima(out, n = n)]
     }
   } else {
     (
@@ -95,9 +102,12 @@ gamma_bootstrapper_Ttest = function(Y,
           pvals = pvals[order(pvals)]
         }
 
-        out = TMTI::MakeY_C(pvals = pvals, m)
+        if (n < m - 1)
+          out = TMTI::MakeZ_C_nsmall(pvals, n, m)
+        else
+          out = TMTI::MakeZ_C(pvals, m)
 
-        out[.GetMinima(out, n = n)]
+        return(out)
       })
   }
 

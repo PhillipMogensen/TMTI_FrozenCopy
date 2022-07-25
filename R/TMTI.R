@@ -38,6 +38,7 @@
 #' @useDynLib TMTI
 #' @import Rcpp
 #' @importFrom Rcpp evalCpp
+
 TMTI = function(pvals,
                  n = Inf,
                  tau = NULL,

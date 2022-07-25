@@ -12,7 +12,9 @@ TestSet_TMTI(
   K = NULL,
   EarlyStop = FALSE,
   verbose = FALSE,
-  gammalist = NULL,
+  gammaList = NULL,
+  mc.cores = 1L,
+  chunksize = 4 * mc.cores,
   is.sorted = FALSE,
   ...
 )
@@ -37,9 +39,16 @@ lower bounds on the p-values for the global test.}
 
 \item{verbose}{Logical; set to TRUE to print progress.}
 
-\item{gammalist}{List of functions. Must be such that the i'th element
+\item{gammaList}{List of functions. Must be such that the i'th element
 is the gamma function for sets of size i. Set to NULL to bootstrap the
 functions assuming independence. Defaults to NULL.}
+
+\item{mc.cores}{Number of cores to parallelize onto.}
+
+\item{chunksize}{Integer indicating the size of chunks to parallelize. E.g.,
+if setting chunksize = mc.cores, each time a parallel computation is set up,
+each worker will perform only a single task. If mc.cores > chunksize, some
+threads will be inactive.}
 
 \item{is.sorted}{Logical, indicating the p-values are pre-sorted. Defaults
 to FALSE.}

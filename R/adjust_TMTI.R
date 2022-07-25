@@ -21,6 +21,18 @@
 #' if setting chunksize = mc.cores, each time a parallel computation is set up,
 #' each worker will perform only a single task. If mc.cores > chunksize, some
 #' threads will be inactive.
+#' @param direction string that is equal to either "increasing"/"i" or "decreasing"/d.
+#' Determines the search direction. "increasing" computes the exact adjusted p-value
+#' for all those hypotheses that can be rejected (while controlling the FWER),
+#' but is potentially slower than "decreasing". "decreasing" computes on the largest
+#' p-value of those that can be rejected, but identifies all hypotheses that can
+#' be rejected. Defaults to "increasing" and has no effect when mc.cores > 1.
+#' @param parallel.direction A string that is either "breadth" or "depth"
+#' (or abbreviated to "b" or "d), indicating in which direction to parallelize.
+#' Breadth-first parallelization uses a more efficient C++ implementation to
+#' adjust each p-value, but depth-first parallelization potentially finishes
+#' faster if using early stopping (EarlyStop = TRUE) and very few hypotheses
+#' can be rejected.
 #' @param ... Additional arguments
 #'
 #' @return a data.frame containing adjusted p-values and their respective indices.
@@ -31,74 +43,31 @@
 #' p[1:10] = p[1:10]**3 # Make the bottom 10 smaller, such that they correspond to false hypotheses
 #' adjust_TMTI(p, alpha = 0.05, is.sorted = TRUE)
 adjust_TMTI = function(pvals, alpha = 0.05, B = 1e3,
-                        gammaList = NULL,
-                        tau = NULL, K = NULL,
-                        is.sorted = FALSE,
-                        EarlyStop = FALSE,
-                        verbose = FALSE,
-                        mc.cores = 1L,
-                        chunksize = 4 * mc.cores,
-                        ...) {
-  m2 = sum(pvals <= alpha)
-  if (m2 <= 0) {
-    stop("There are no p-values that are marginally significant at level alpha")
+                       gammaList = NULL,
+                       tau = NULL, K = NULL,
+                       is.sorted = FALSE,
+                       EarlyStop = FALSE,
+                       verbose = FALSE,
+                       mc.cores = 1L,
+                       chunksize = 4 * mc.cores,
+                       direction = "increasing",
+                       parallel.direction = "breadth",
+                       ...) {
+  LocalTest = function (x) {
+    TMTI::TMTI(x, tau = tau, K = K, gamma = gammaList[[length(x)]])
   }
-  if (verbose) {
-    cat(sprintf("\rThere are %i marginally significant p-values to adjust", m2))
-  }
+  TMTI::adjust_LocalTest (
+    LocalTest = LocalTest,
+    pvals = pvals,
+    alpha = alpha,
+    is.sorted = is.sorted,
+    EarlyStop = EarlyStop,
+    verbose = verbose,
+    mc.cores = mc.cores,
+    chunksize = chunksize,
+    direction = direction,
+    parallel.direction = parallel.direction,
+    ...
+  )
 
-  if (is.sorted) {
-    ord = seq_along(pvals)
-  } else {
-    ord = order(pvals)
-  }
-
-  .f = function(i) {
-    if (verbose) {
-      cat(sprintf("\rAdjusting p-value %i of %i\n", i, m2))
-    }
-
-    out = TMTI::TestSet_TMTI(
-      pvals = pvals,
-      subset = ord[i],
-      alpha = alpha,
-      EarlyStop = EarlyStop,
-      tau = tau, K = K,
-      gammaList = gammaList,
-      verbose = verbose,
-      is.sorted = is.sorted,
-      mc.cores = mc.cores,
-      chunksize = chunksize
-    )
-    out
-  }
-
-  # if (mc.cores == 1) {
-  #   results = list()
-  #   for (i in seq(m2)) {
-  #     results[[i]] = .f(i)
-  #     if (results[[i]] >= alpha & EarlyStop) {
-  #       message(paste0("Adjusted p-value ", i, " was above alpha, implying that the remaining are also above alpha. Exiting"))
-  #       break
-  #     }
-  #   }
-  #   return (
-  #     data.frame (
-  #       "p"     = unlist(results),
-  #       "index" = ord[1:length(results)]
-  #     )
-  #   )
-  # } else {
-  #   results = parallel::mclapply (
-  #     seq(m2),
-  #     .f,
-  #     mc.cores = mc.cores
-  #   )
-  #   return (
-  #     data.frame (
-  #       "p"     = unlist(results),
-  #       "index" = ord[1:length(results)]
-  #     )
-  #   )
-  # }
 }

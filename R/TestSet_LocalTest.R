@@ -9,8 +9,7 @@
 #' accepted at level alpha. This speeds up the procedure, but now only provides
 #' lower bounds on the p-values for the global test.
 #' @param verbose Logical; set to TRUE to print progress.
-#' @param mc.cores Number of cores to parallelize onto. If mc.cores > 1 the procedure
-#' cannot stop early and may then be slower than with mc.cores = 1.
+#' @param mc.cores Number of cores to parallelize onto.
 #' @param chunksize Integer indicating the size of chunks to parallelize. E.g.,
 #' if setting chunksize = mc.cores, each time a parallel computation is set up,
 #' each worker will perform only a single task. If mc.cores > chunksize, some
@@ -42,66 +41,29 @@ TestSet_LocalTest = function(LocalTest,
                               mc.cores = 1L,
                               chunksize = 4 * mc.cores,
                               is.sorted = FALSE,
-                              pRest = NULL,
                               ...) {
   is_subset_sequence = all(seq_along(subset) == subset)
 
   m = length(pvals)
   m2 = length(subset)
-  if (!is.sorted)
-    pvals = sort(pvals)
 
   pSub = pvals[subset]
-  # if (is.null(pRest))
   pRest = pvals[-subset]
+
+  if (!is.sorted) {
+    pSub = sort(pSub)
+    pRest = sort(pRest)
+  }
+
+
 
   p_first = LocalTest(pSub)
   if (p_first > alpha & EarlyStop) {
     return(p_first)
   }
 
-  # out = list()
-
-  # pfirst = LocalTest(pSub)
-  # out[[1]] = c(
-  #   "p"     = pfirst,
-  #   "layer" = 0,
-  #   "Accept" = (pfirst > alpha)
-  # )
-  #
-  # if (EarlyStop & out[[1]][3]) {
-  #   return(out[[1]][1])
-  # }
-
 
   if (mc.cores <= 1L) {
-    # stepCounter = 0
-    # currentMax = 0
-    #
-    # out = list()
-    #
-    # for (i in length(pRest):1) {
-    #   stepCounter = stepCounter + 1
-    #   if (verbose) {
-    #     cat("\rStep", stepCounter, " of ", length(pRest))
-    #   }
-    #
-    #   p = LocalTest (
-    #     if (is_subset_sequence)
-    #       c(pSub, pRest[i:length(pRest)])
-    #     else
-    #       sort(c(pSub, pRest[i:length(pRest)]))
-    #   )
-    #
-    #   if (p > currentMax)
-    #     p = currentMax
-    #
-    #   if (EarlyStop & (currentMax > 0.05))
-    #     break
-    # }
-    #
-    # return(currentMax)
-
     out = TestSet_C(
       LocalTest = LocalTest,
       pSub = pSub,

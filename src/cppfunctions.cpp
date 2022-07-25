@@ -163,3 +163,43 @@ double TestSet_C (
 
   return currentMax;
 }
+
+
+//' Leading NA
+//'
+//' Tests a user-specified subset in a CTP, using a user-supplied local test
+//'
+//'
+//' @param LocalTest A function that returns a double in (0, 1).
+//' @param f A function that iterates LocalTest over the relevant test tree.
+//' In practice, this is called as TestSet_C.
+//' @param pvals A vector of p-values.
+//' @export
+// [[Rcpp::export]]
+std::deque<double> FullCTP_C (Function LocalTest,
+                            Function f,
+                            std::deque<double> pvals) {
+  std::deque<double> BottomTrees;
+  std::deque<double> TopTree;
+  std::deque<double> p_copy;
+  std::deque<double> out;
+  double max;
+  p_copy.insert(p_copy.begin(), pvals.begin(), pvals.end());
+  int m = pvals.size();
+  for (int i = 0; i < m - 1; i++) {
+    TopTree.push_back(*REAL(LocalTest(pvals)));
+    double p = pvals.front();
+    pvals.pop_front();
+    BottomTrees.push_back(*REAL(f(p, pvals)));
+  }
+  TopTree.push_back(p_copy.back());
+  for (int i = 0; i < m; i++) {
+    max = *std::max_element(TopTree.begin(), TopTree.begin() + i + 1);
+    if (BottomTrees[i] > max) {
+      out.push_back(BottomTrees[i]);
+    } else {
+      out.push_back(max);
+    }
+  }
+  return out;
+}
