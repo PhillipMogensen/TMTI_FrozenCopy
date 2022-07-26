@@ -9,7 +9,6 @@ gamma_bootstrapper_Ttest(
   X = NULL,
   n = Inf,
   B = 1000,
-  log.p = FALSE,
   mc.cores = 1L,
   tau = NULL,
   K = NULL
@@ -28,9 +27,6 @@ Defaults to Inf, corresponding to the global minimum.}
 \item{B}{Number of bootstrap replicates. Rule of thumb is to use at least
 10 * m}
 
-\item{log.p}{Logical indicating whether to calculate p-values on log-scale.
-Defaults to FALSE.}
-
 \item{mc.cores}{Integer denoting the number of cores to use when using
 parallelization, Defaults to 1, corresponding to single-threaded computations}
 
@@ -48,13 +44,14 @@ TMTI_CTP function
 Compute a list of TMTI CDFs for one- and two-sample test scenarios
 }
 \examples{
-d <- 100
-m <- 3
+d = 100
+m = 3
 
-X <- sample(LETTERS[1:2], d, replace = TRUE)
-Y <- matrix(rnorm(d * m), nrow = d, ncol = m)
-pvalues <- apply(Y, 2, function(y) t.test(y ~ X)$p.value)
+X = sample(LETTERS[1:2], d, replace = TRUE)
+Y = matrix(rnorm(d * m), nrow = d, ncol = m)
+pvalues = apply(Y, 2, function(y) t.test(y ~ X)$p.value)
 
-gammaFunctions <- gamma_bootstrapper_Ttest(Y, X)  # Produces a list of CDFs
-TMTI_CTP(pvalues, gammaList = gammaFunctions)  # Adjusted p-values using the bootstrapped CDFs
+gammaFunctions = gamma_bootstrapper_Ttest(Y, X) # Produces a list of CDFs
+CTP_TMTI(pvalues, gammaList = gammaFunctions) # Adjusted p-values using the bootstrapped CDFs
+
 }

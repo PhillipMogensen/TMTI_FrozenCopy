@@ -11,9 +11,11 @@ TopDown_TMTI(
   alpha = 0.05,
   gammaList = NULL,
   verbose = TRUE,
-  log.p = FALSE,
   tau = NULL,
   K = NULL,
+  is.sorted = FALSE,
+  mc.cores = 1L,
+  chunksize = 4 * mc.cores,
   ...
 )
 }
@@ -35,14 +37,21 @@ to NULL}
 \item{verbose}{Logical, indicating whether or not to write out the progress.
 Defaults to TRUE}
 
-\item{log.p}{Logical, indicating whether to calculate Ys on a log scale.
-Defaults to FALSE}
-
 \item{tau}{Numerical (in (0,1)); threshold to use in tTMTI. If set to NULL,
 then either TMTI (default) or rtTMTI is used.}
 
 \item{K}{Integer; Number of smallest p-values to use in rtTMTI. If se to NULL,
 then either TMTI (default) or tTMTI is used.}
+
+\item{is.sorted}{Logical, indicating whether the supplied p-values are already
+is.sorted. Defaults to FALSE.}
+
+\item{mc.cores}{Number of cores to parallelize onto.}
+
+\item{chunksize}{Integer indicating the size of chunks to parallelize. E.g.,
+if setting chunksize = mc.cores, each time a parallel computation is set up,
+each worker will perform only a single task. If mc.cores > chunksize, some
+threads will be inactive.}
 
 \item{...}{Additional parameters}
 }
@@ -57,9 +66,10 @@ of false hypotheses among a set.
 \examples{
 ## Simulate some p-values
 ## The first 10 are from false hypotheses, the next 10 are from true
-pvals <- c (
-  rbeta(10, 1, 20),  ## Mean value of .05
+pvals = c(
+  rbeta(10, 1, 20), ## Mean value of .05
   runif(10)
 )
 TopDown_TMTI(pvals)
+
 }
