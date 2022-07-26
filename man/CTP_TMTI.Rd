@@ -2,9 +2,21 @@
 % Please edit documentation in R/CTP_TMTI.R
 \name{CTP_TMTI}
 \alias{CTP_TMTI}
+\alias{TMTI_CTP}
 \title{A Closed Testing Procedure for the TMTI using an O(n^2) shortcut}
 \usage{
 CTP_TMTI(
+  pvals,
+  alpha = 0.05,
+  B = 1000,
+  gammaList = NULL,
+  tau = NULL,
+  K = NULL,
+  is.sorted = FALSE,
+  ...
+)
+
+TMTI_CTP(
   pvals,
   alpha = 0.05,
   B = 1000,

@@ -1,5 +1,7 @@
 #' Test a subset of hypotheses in its closure using a user-specified local test
 #'
+#' @name TestSet_LocalTest
+#' @aliases TestSet_localTest
 #' @param LocalTest Function which defines a combination test.
 #' @param pvals Numeric vector of p-values
 #' @param subset Numeric vector; the subset to be tested
@@ -83,6 +85,86 @@ TestSet_LocalTest = function(LocalTest,
         ptilde = sort(c(pSub, pRest[i:length(pRest)]))
       }
       LocalTest(ptilde)
+    }
+    chunks = split(rev(seq(length(pRest))), ceiling(seq(length(pRest)) / chunksize))
+    results = list()
+    counter = 1
+    for (x in chunks) {
+      if (verbose) {
+        cat(sprintf("\rProcessing chunk %i of %i", counter, length(chunks)))
+      }
+      results_ = parallel::mclapply(
+        x,
+        .f,
+        mc.cores = mc.cores
+      )
+      results[[counter]] = unlist(results_)
+      if (any(unlist(results) > alpha)) {
+        break
+      }
+      counter = counter + 1
+    }
+    max(unlist(results))
+  }
+}
+
+#'
+#' @rdname TestSet_LocalTest
+#' @param localTest A function specifying a local test.
+#' @export
+TestSet_localTest = function(localTest,
+                             pvals,
+                             subset,
+                             alpha = 0.05,
+                             EarlyStop = FALSE,
+                             verbose = FALSE,
+                             mc.cores = 1L,
+                             chunksize = 4 * mc.cores,
+                             is.sorted = FALSE,
+                             ...) {
+  .Deprecated(new = "TestSet_LocalTest")
+
+  is_subset_sequence = all(seq_along(subset) == subset)
+
+  m = length(pvals)
+  m2 = length(subset)
+
+  pSub = pvals[subset]
+  pRest = pvals[-subset]
+
+  if (!is.sorted) {
+    pSub = sort(pSub)
+    pRest = sort(pRest)
+  }
+
+
+
+  p_first = localTest(pSub)
+  if (p_first > alpha & EarlyStop) {
+    return(p_first)
+  }
+
+
+  if (mc.cores <= 1L) {
+    out = TestSet_C(
+      LocalTest = localTest,
+      pSub = pSub,
+      pRest = pRest,
+      alpha = alpha,
+      is_subset_sequence = is_subset_sequence,
+      EarlyStop = EarlyStop,
+      verbose = verbose
+    )
+
+    max(out, p_first)
+  } else {
+    .f = function(i) {
+      if (is_subset_sequence) {
+        ptilde = c(pSub, pRest[i:length(pRest)])
+      } else {
+        ptilde = sort(c(pSub, pRest[i:length(pRest)]))
+      }
+      localTest(ptilde)
     }
     chunks = split(rev(seq(length(pRest))), ceiling(seq(length(pRest)) / chunksize))
     results = list()

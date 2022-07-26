@@ -1,5 +1,7 @@
 #' A Closed Testing Procedure for the TMTI using an O(n^2) shortcut
 #'
+#' @name CTP_TMTI
+#' @aliases TMTI_CTP
 #' @param pvals A vector of p-values
 #' @param alpha Level to perform each intersection test at. Defaults to 0.05
 #' @param B Number of bootstrap replications if gamma needs to be approximated.
@@ -70,79 +72,47 @@ CTP_TMTI = function(pvals, alpha = 0.05, B = 1e3,
     "index"      = ord
   )
 }
-# CTP_TMTI = function(pvals, alpha = 0.05, B = 1e3,
-#                      gammaList = NULL,
-#                      log.p = FALSE,
-#                      tau = NULL, K = NULL,
-#                      OnlySignificant = TRUE,
-#                      progress = FALSE,
-#                      is.sorted = FALSE,
-#                      ...) {
-#   if (is.sorted) {
-#     ord = seq_along(pvals)
-#     p = pvals
-#   } else {
-#     ord = order(pvals)
-#     p = sort(pvals)
-#   }
-#   m = length(pvals)
-#
-#   if (!is.null(K)) {
-#     if (length(K) < length(pvals)) {
-#       K = rep(K, length.out = length(pvals))
-#     }
-#   }
-#
-#   Q = matrix(0, m, m)
-#
-#   Q[m, m] = p[m]
-#
-#   n_significant = sum(pvals <= alpha)
-#
-#   if (progress) {
-#     count_max = if (OnlySignificant) n_significant else m
-#   }
-#
-#   for (i in 1:(m - 1)) {
-#     if (progress) {
-#       cat(
-#         sprintf(
-#           "\rAdjusting p-value %i of %i",
-#           i, count_max
-#         )
-#       )
-#     }
-#     counter = m
-#
-#     Q[counter, i] = p[i]
-#
-#     for (j in m:(i + 1)) {
-#       if (OnlySignificant & i >= n_significant) {
-#         Q[, i] = 1
-#         next
-#       }
-#
-#       counter = counter - 1
-#
-#       subp = p[c(i, m:j)]
-#       m2 = length(subp)
-#
-#       Q[counter, i] = TMTI(
-#         pvals = subp,
-#         tau = tau,
-#         K = K[m2],
-#         gamma = gammaList[[m2]],
-#         is.sorted = is.sorted
-#       )
-#     }
-#   }
-#   for (i in 2:m) {
-#     Q[1:(i - 1), i] = diag(Q)[1:(i - 1)]
-#   }
-#   adjusted_p = apply(Q, 2, max)
-#
-#   data.frame(
-#     "p_adjusted" = adjusted_p,
-#     "index"      = ord
-#   )
-# }
+
+#'
+#' @rdname CTP_TMTI
+#' @export
+TMTI_CTP = function(pvals, alpha = 0.05, B = 1e3,
+                    gammaList = NULL,
+                    tau = NULL, K = NULL,
+                    is.sorted = FALSE,
+                    ...) {
+  .Deprecated(new = "CTP_CTMI")
+
+  if (is.sorted) {
+    ord = 1:length(pvals)
+  } else {
+    ord = order(pvals)
+    pvals = sort(pvals)
+  }
+
+  LocalTest = function (x) {
+    TMTI::TMTI(x, tau = tau, K = K, gamma = gammaList[[length(x)]])
+  }
+
+  f = function (x, y) {
+    TMTI::TestSet_C (
+      LocalTest = LocalTest,
+      pSub = x,
+      pRest = y,
+      alpha = 0.05,
+      is_subset_sequence = TRUE,
+      EarlyStop = FALSE,
+      verbose = FALSE
+    )
+  }
+
+  p_adjusted = FullCTP_C (
+    LocalTest,
+    f,
+    pvals
+  )
+  data.frame (
+    "p_adjusted" = p_adjusted,
+    "index"      = ord
+  )
+}

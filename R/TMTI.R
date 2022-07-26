@@ -1,4 +1,4 @@
-#' Functions for computing the TMTI tests
+#' Computes the TMTI test for a joint hypothesis given input p-values.
 #'
 #' @param pvals A vector of pvalues
 #' @param n A positive number (or Inf) indicating which type of local minimum
@@ -29,15 +29,6 @@
 #'   runif(10)
 #' )
 #' TMTI(pvals)
-#'
-#' @docType package
-#' @description A package to compute TMTI tests, perform closed testing
-#' procedures with quadratic shortcuts and to generate confidence sets for the
-#' number of false hypotheses among m tested hypotheses.
-#' @name TMTI
-#' @useDynLib TMTI
-#' @import Rcpp
-#' @importFrom Rcpp evalCpp
 
 TMTI = function(pvals,
                  n = Inf,
