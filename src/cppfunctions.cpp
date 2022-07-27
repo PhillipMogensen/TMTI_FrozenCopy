@@ -176,15 +176,13 @@ double TestSet_C (
 //' @param pvals A vector of p-values.
 //' @export
 // [[Rcpp::export]]
-std::deque<double> FullCTP_C (Function LocalTest,
+std::vector<double> FullCTP_C (Function LocalTest,
                             Function f,
                             std::deque<double> pvals) {
-  std::deque<double> BottomTrees;
-  std::deque<double> TopTree;
-  std::deque<double> p_copy;
-  std::deque<double> out;
+  std::vector<double> BottomTrees;
+  std::vector<double> TopTree;
+  std::vector<double> out;
   double max;
-  p_copy.insert(p_copy.begin(), pvals.begin(), pvals.end());
   int m = pvals.size();
   for (int i = 0; i < m - 1; i++) {
     TopTree.push_back(*REAL(LocalTest(pvals)));
@@ -192,7 +190,7 @@ std::deque<double> FullCTP_C (Function LocalTest,
     pvals.pop_front();
     BottomTrees.push_back(*REAL(f(p, pvals)));
   }
-  TopTree.push_back(p_copy.back());
+  TopTree.push_back(pvals[0]);
   for (int i = 0; i < m; i++) {
     max = *std::max_element(TopTree.begin(), TopTree.begin() + i + 1);
     if (BottomTrees[i] > max) {
