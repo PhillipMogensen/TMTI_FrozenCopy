@@ -56,6 +56,7 @@ TopDown_TMTI = function(pvals,
   TMTI::TopDown_LocalTest (
     LocalTest = LocalTest,
     pvals = pvals,
+    subset = subset,
     alpha = alpha,
     is.sorted = is.sorted,
     verbose = verbose,
