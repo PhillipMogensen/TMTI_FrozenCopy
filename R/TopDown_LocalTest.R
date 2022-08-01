@@ -40,7 +40,7 @@ TopDown_LocalTest = function(LocalTest,
                               pvals,
                               subset = NULL,
                               alpha = 0.05,
-                              verbose = TRUE,
+                              verbose = FALSE,
                               mc.cores = 1L,
                               chunksize = 4 * mc.cores,
                               ...) {
@@ -50,47 +50,72 @@ TopDown_LocalTest = function(LocalTest,
   t_alpha = 0
 
   if (!is.null(subset) & length(subset) < length(pvals)) {
-    counter = 0
-    top = length(subset)
-    for (i in seq_along(subset)) {
-      counter = counter + 1
-      if (verbose) {
-        cat(
-          sprintf(
-            "\rOuter step %i of %i\n", counter, length(subset)
+    if (mc.cores <= 1L) {
+      counter = 0
+      top = length(subset)
+      for (i in seq_along(subset)) {
+        counter = counter + 1
+        if (verbose) {
+          cat(
+            sprintf(
+              "\rOuter step %i of %i\n", counter, length(subset)
+            )
           )
+        }
+        subset2 = subset[i:length(subset)]
+        p_loc = TestSet_LocalTest(
+          LocalTest,
+          pvals,
+          subset2,
+          alpha = alpha,
+          EarlyStop = TRUE,
+          verbose = verbose,
+          mc.cores = mc.cores,
+          ...
         )
-      }
-      subset2 = subset[i:length(subset)]
-      p_loc = TestSet_LocalTest(
-        LocalTest,
-        pvals,
-        subset2,
-        alpha = alpha,
-        EarlyStop = TRUE,
-        verbose = verbose,
-        mc.cores = mc.cores,
-        ...
-      )
-      accept = (p_loc >= alpha)
-      if (accept) {
-        t_alpha = length(subset2)
-        break
-      }
-    }
-  } else {
-    top = length(pvals)
-    if (mc.cores <= 1) {
-      for (i in 1:m) {
-        if (verbose) cat("\rStep", i)
-        pvals_tilde = pvals[i:m]
-        p_loc = LocalTest(pvals_tilde)
         accept = (p_loc >= alpha)
         if (accept) {
-          t_alpha = length(pvals_tilde)
+          t_alpha = length(subset2)
           break
         }
       }
+      out = top - t_alpha
+    } else {
+      l_sub = length(subset)
+      chunks = split(seq_along(subset), ceiling(seq_along(subset) / chunksize))
+      results = list()
+      counter = 1
+      for (x in chunks) {
+        results[[counter]] = unlist(parallel::mclapply (
+          x,
+          function (i) {
+            TestSet_C (
+              LocalTest = LocalTest,
+              pSub = pvals[subset[i:l_sub]],
+              pRest = pvals[-subset[i:l_sub]],
+              alpha = alpha,
+              is_subset_sequence = FALSE,
+              EarlyStop = TRUE,
+              verbose = FALSE
+            )
+          },
+          mc.cores = mc.cores
+        ))
+        if (any(unlist(results) > alpha)) {
+          break
+        }
+        counter = counter + 1
+      }
+      t_alpha = length(subset) + 1 - which(unlist(results) > alpha)[1]
+      out = length(subset) - t_alpha
+    }
+  } else {
+    if (mc.cores <= 1L) {
+      out = TopDown_C (
+        LocalTest = LocalTest,
+        pvals = pvals,
+        alpha = alpha
+      )
     } else {
       .f = function(i) {
         pvals_tilde = pvals[i:m]
@@ -116,6 +141,7 @@ TopDown_LocalTest = function(LocalTest,
         counter = counter + 1
       }
       t_alpha = m + 1 - which(unlist(results) > alpha)[1]
+      out = length(pvals) - t_alpha
     }
   }
 
@@ -123,14 +149,14 @@ TopDown_LocalTest = function(LocalTest,
     cat(
       paste0(
         "Confidence set for the number of false hypotheses is {",
-        top - t_alpha,
+        out,
         ",..., ",
-        top,
+        min(length(pvals), length(subset)),
         "}\n"
       )
     )
   }
-  return(top - t_alpha)
+  return(out)
 }
 
 
@@ -147,92 +173,14 @@ TopDown_localTest = function(localTest,
                              chunksize = 4 * mc.cores,
                              ...) {
   .Deprecated(new = "TopDown_LocalTest")
-
-  ord = order(pvals)
-  pvals = sort(pvals)
-  m = length(pvals)
-  t_alpha = 0
-
-  if (!is.null(subset) & length(subset) < length(pvals)) {
-    counter = 0
-    top = length(subset)
-    for (i in seq_along(subset)) {
-      counter = counter + 1
-      if (verbose) {
-        cat(
-          sprintf(
-            "\rOuter step %i of %i\n", counter, length(subset)
-          )
-        )
-      }
-      subset2 = subset[i:length(subset)]
-      p_loc = TestSet_localTest(
-        localTest,
-        pvals,
-        subset2,
-        alpha = alpha,
-        EarlyStop = TRUE,
-        verbose = verbose,
-        mc.cores = mc.cores,
-        ...
-      )
-      accept = (p_loc >= alpha)
-      if (accept) {
-        t_alpha = length(subset2)
-        break
-      }
-    }
-  } else {
-    top = length(pvals)
-    if (mc.cores <= 1) {
-      for (i in 1:m) {
-        if (verbose) cat("\rStep", i)
-        pvals_tilde = pvals[i:m]
-        p_loc = localTest(pvals_tilde)
-        accept = (p_loc >= alpha)
-        if (accept) {
-          t_alpha = length(pvals_tilde)
-          break
-        }
-      }
-    } else {
-      .f = function(i) {
-        pvals_tilde = pvals[i:m]
-        p_loc = localTest(pvals_tilde)
-        p_loc
-      }
-      chunks = split(seq(m), ceiling(seq(m) / chunksize))
-      results = list()
-      counter = 1
-      for (x in chunks) {
-        if (verbose) {
-          cat(sprintf("\rProcessing chunk %i of %i", counter, length(chunks)))
-        }
-        results_ = parallel::mclapply(
-          x,
-          .f,
-          mc.cores = mc.cores
-        )
-        results[[counter]] = unlist(results_)
-        if (any(unlist(results) > alpha)) {
-          break
-        }
-        counter = counter + 1
-      }
-      t_alpha = m + 1 - which(unlist(results) > alpha)[1]
-    }
-  }
-
-  if (verbose) {
-    cat(
-      paste0(
-        "Confidence set for the number of false hypotheses is {",
-        top - t_alpha,
-        ",..., ",
-        top,
-        "}\n"
-      )
-    )
-  }
-  return(top - t_alpha)
+  TopDown_LocalTest (
+    LocalTest = localTest,
+    pvals = pvals,
+    subset = NULL,
+    alpha = 0.05,
+    verbose = TRUE,
+    mc.cores = 1L,
+    chunksize = 4 * mc.cores,
+    ...
+  )
 }

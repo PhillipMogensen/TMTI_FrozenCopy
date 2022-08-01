@@ -201,3 +201,33 @@ std::vector<double> FullCTP_C (Function LocalTest,
   }
   return out;
 }
+
+
+//' Leading NA
+//'
+//' Computes a confidence set for the number of false hypotheses among all hypotheses
+//'
+//'
+//' @param LocalTest A function that returns a double in (0, 1).
+//' @param pvals A vector of p-values.
+//' @param alpha A double indicating the significance level
+//' @export
+// [[Rcpp::export]]
+int TopDown_C (Function LocalTest,
+               std::deque<double> pvals,
+               double alpha) {
+  int m = pvals.size();
+  int t_alpha = 0;
+  double p;
+  for(int i = 0; i < m; i++) {
+    p = *REAL(LocalTest(pvals));
+    if (p > alpha) {
+      t_alpha = pvals.size();
+      break;
+    } else {
+      pvals.pop_front();
+    }
+  }
+
+  return m - t_alpha;
+}

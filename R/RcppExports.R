@@ -78,3 +78,16 @@ FullCTP_C <- function(LocalTest, f, pvals) {
     .Call('_TMTI_FullCTP_C', PACKAGE = 'TMTI', LocalTest, f, pvals)
 }
 
+#' Leading NA
+#'
+#' Computes a confidence set for the number of false hypotheses among all hypotheses
+#'
+#'
+#' @param LocalTest A function that returns a double in (0, 1).
+#' @param pvals A vector of p-values.
+#' @param alpha A double indicating the significance level
+#' @export
+TopDown_C <- function(LocalTest, pvals, alpha) {
+    .Call('_TMTI_TopDown_C', PACKAGE = 'TMTI', LocalTest, pvals, alpha)
+}
+

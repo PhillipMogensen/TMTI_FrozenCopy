@@ -80,7 +80,7 @@ adjust_LocalTest = function(LocalTest,
         cat(sprintf("\rAdjusting p-value %i of %i.", i, m2))
       }
 
-      out = TestSet_LocalTest(
+      out = TMTI::TestSet_LocalTest(
         LocalTest,
         pvals = pvals,
         subset = ord[i],
@@ -144,7 +144,7 @@ adjust_LocalTest = function(LocalTest,
         cat(sprintf("\rAdjusting p-value %i of %i.", i, m2))
       }
 
-      out = TestSet_LocalTest(
+      out = TMTI::TestSet_LocalTest(
         LocalTest,
         pvals = pvals,
         subset = ord[i],
@@ -180,27 +180,27 @@ adjust_LocalTest = function(LocalTest,
       results[[counter]] = unlist(parallel::mclapply (
         x,
         function (j) {
-          TestSet_LocalTest (
-            LocalTest,
+          TMTI::TestSet_LocalTest (
+            LocalTest = LocalTest,
             pvals = pvals,
             subset = ord[j],
             alpha = alpha,
             EarlyStop = EarlyStop,
             verbose = verbose,
-            is.sorted = is.sorted,
             mc.cores = 1,
-            ...
+            is.sorted = is.sorted
           )
         },
         mc.cores = mc.cores
       ))
+      counter = counter + 1
       if ((any(unlist(results) > alpha)) & EarlyStop)
         break
     }
     return(
       data.frame(
         "p"     = unlist(results),
-        "index" = ord[1:length(results)]
+        "index" = ord[1:length(unlist(results))]
       )
     )
   }
