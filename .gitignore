@@ -6,3 +6,5 @@ TMTI_1.0.tar.gz
 *.o
 *.o
 *.o
+src/cppfunctions.o
+src/RcppExports.o
