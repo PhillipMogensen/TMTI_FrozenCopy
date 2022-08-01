@@ -11,7 +11,7 @@ TopDown_LocalTest(
   pvals,
   subset = NULL,
   alpha = 0.05,
-  verbose = TRUE,
+  verbose = FALSE,
   mc.cores = 1L,
   chunksize = 4 * mc.cores,
   ...
