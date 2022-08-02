@@ -65,15 +65,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // FullCTP_C
-std::vector<double> FullCTP_C(Function LocalTest, Function f, std::deque<double> pvals);
-RcppExport SEXP _TMTI_FullCTP_C(SEXP LocalTestSEXP, SEXP fSEXP, SEXP pvalsSEXP) {
+std::vector<double> FullCTP_C(Function LocalTest, Function f, std::deque<double> pvals, double threshold);
+RcppExport SEXP _TMTI_FullCTP_C(SEXP LocalTestSEXP, SEXP fSEXP, SEXP pvalsSEXP, SEXP thresholdSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Function >::type LocalTest(LocalTestSEXP);
     Rcpp::traits::input_parameter< Function >::type f(fSEXP);
     Rcpp::traits::input_parameter< std::deque<double> >::type pvals(pvalsSEXP);
-    rcpp_result_gen = Rcpp::wrap(FullCTP_C(LocalTest, f, pvals));
+    Rcpp::traits::input_parameter< double >::type threshold(thresholdSEXP);
+    rcpp_result_gen = Rcpp::wrap(FullCTP_C(LocalTest, f, pvals, threshold));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -96,7 +97,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_TMTI_MakeY_C", (DL_FUNC) &_TMTI_MakeY_C, 2},
     {"_TMTI_MakeZ_C_nsmall", (DL_FUNC) &_TMTI_MakeZ_C_nsmall, 3},
     {"_TMTI_TestSet_C", (DL_FUNC) &_TMTI_TestSet_C, 7},
-    {"_TMTI_FullCTP_C", (DL_FUNC) &_TMTI_FullCTP_C, 3},
+    {"_TMTI_FullCTP_C", (DL_FUNC) &_TMTI_FullCTP_C, 4},
     {"_TMTI_TopDown_C", (DL_FUNC) &_TMTI_TopDown_C, 3},
     {NULL, NULL, 0}
 };

@@ -5,7 +5,14 @@
 \alias{localTest_CTP}
 \title{A Closed Testing Procedure for any local test satisfying the conditions of Mogensen and Markussen (2021) using an O(n^2) shortcut.}
 \usage{
-CTP_LocalTest(LocalTest, pvals, alpha = 0.05, is.sorted = FALSE, ...)
+CTP_LocalTest(
+  LocalTest,
+  pvals,
+  alpha = 0.05,
+  is.sorted = FALSE,
+  threshold = alpha,
+  ...
+)
 
 localTest_CTP(localTest, pvals, alpha = 0.05, is.sorted = FALSE, ...)
 }
@@ -18,6 +25,9 @@ localTest_CTP(localTest, pvals, alpha = 0.05, is.sorted = FALSE, ...)
 
 \item{is.sorted}{Logical, indicating whether the supplied p-values are already
 is.sorted. Defaults to FALSE.}
+
+\item{threshold}{Only p-values below this threshold will be adjusted. If all
+p-values should be adjusted, set threshold = 1. Defaults to alpha.}
 
 \item{...}{Additional arguments}
 

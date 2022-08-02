@@ -73,9 +73,11 @@ TestSet_C <- function(LocalTest, pSub, pRest, alpha, is_subset_sequence, EarlySt
 #' @param f A function that iterates LocalTest over the relevant test tree.
 #' In practice, this is called as TestSet_C.
 #' @param pvals A vector of p-values.
+#' @param threshold A double to threshold p-values at. That is, only marginal
+#' p-values that are below this threshold will be adjusted.
 #' @export
-FullCTP_C <- function(LocalTest, f, pvals) {
-    .Call('_TMTI_FullCTP_C', PACKAGE = 'TMTI', LocalTest, f, pvals)
+FullCTP_C <- function(LocalTest, f, pvals, threshold) {
+    .Call('_TMTI_FullCTP_C', PACKAGE = 'TMTI', LocalTest, f, pvals, threshold)
 }
 
 #' Leading NA

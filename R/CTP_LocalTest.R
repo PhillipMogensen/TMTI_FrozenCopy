@@ -7,6 +7,8 @@
 #' @param alpha Level to perform each intersection test at. Defaults to 0.05
 #' @param is.sorted Logical, indicating whether the supplied p-values are already
 #' is.sorted. Defaults to FALSE.
+#' @param threshold Only p-values below this threshold will be adjusted. If all
+#' p-values should be adjusted, set threshold = 1. Defaults to alpha.
 #' @param ... Additional arguments
 #'
 #' @return A data.frame containing:
@@ -27,7 +29,14 @@
 #' }, pvals)
 #'
 
-CTP_LocalTest = function(LocalTest, pvals, alpha = 0.05, is.sorted = FALSE, ...) {
+CTP_LocalTest = function(
+    LocalTest,
+    pvals,
+    alpha = 0.05,
+    is.sorted = FALSE,
+    threshold = alpha,
+    ...
+) {
   if (is.sorted) {
     ord = 1:length(pvals)
   } else {
@@ -49,11 +58,12 @@ CTP_LocalTest = function(LocalTest, pvals, alpha = 0.05, is.sorted = FALSE, ...)
   p_adjusted = FullCTP_C (
     LocalTest,
     f,
-    pvals
+    pvals,
+    threshold
   )
   data.frame (
     "p_adjusted" = p_adjusted,
-    "index"      = ord
+    "index"      = ord[1:length(p_adjusted)]
   )
 }
 

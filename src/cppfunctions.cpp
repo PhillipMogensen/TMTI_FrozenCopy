@@ -174,31 +174,63 @@ double TestSet_C (
 //' @param f A function that iterates LocalTest over the relevant test tree.
 //' In practice, this is called as TestSet_C.
 //' @param pvals A vector of p-values.
+//' @param threshold A double to threshold p-values at. That is, only marginal
+//' p-values that are below this threshold will be adjusted.
 //' @export
 // [[Rcpp::export]]
 std::vector<double> FullCTP_C (Function LocalTest,
                             Function f,
-                            std::deque<double> pvals) {
+                            std::deque<double> pvals,
+                            double threshold) {
   std::vector<double> BottomTrees;
   std::vector<double> TopTree;
   std::vector<double> out;
   double max;
+  int m_max;
+
   int m = pvals.size();
-  for (int i = 0; i < m - 1; i++) {
-    TopTree.push_back(*REAL(LocalTest(pvals)));
-    double p = pvals.front();
-    pvals.pop_front();
-    BottomTrees.push_back(*REAL(f(p, pvals)));
-  }
-  TopTree.push_back(pvals[0]);
-  for (int i = 0; i < m; i++) {
-    max = *std::max_element(TopTree.begin(), TopTree.begin() + i + 1);
-    if (BottomTrees[i] > max) {
-      out.push_back(BottomTrees[i]);
-    } else {
-      out.push_back(max);
+  if (threshold < 1) {
+    m_max = std::accumulate(pvals.begin(), pvals.end(), 0,
+                                [&](double a, double b){return a + (b < threshold);});
+    for (int i = 0; i < m_max; i++) {
+      TopTree.push_back(*REAL(LocalTest(pvals)));
+      double p = pvals.front();
+      pvals.pop_front();
+      BottomTrees.push_back(*REAL(f(p, pvals)));
+    }
+    TopTree.push_back(pvals.front());
+
+
+    for (int i = 0; i < m_max; i++) {
+      max = *std::max_element(TopTree.begin(), TopTree.begin() + i + 1);
+      if (BottomTrees[i] > max) {
+        out.push_back(BottomTrees[i]);
+      } else {
+        out.push_back(max);
+      }
+    }
+  } else {
+    m_max = m - 1;
+    for (int i = 0; i < m_max; i++) {
+      TopTree.push_back(*REAL(LocalTest(pvals)));
+      double p = pvals.front();
+      pvals.pop_front();
+      BottomTrees.push_back(*REAL(f(p, pvals)));
+    }
+    TopTree.push_back(pvals.front());
+
+
+    for (int i = 0; i < m; i++) {
+      max = *std::max_element(TopTree.begin(), TopTree.begin() + i + 1);
+      if (BottomTrees[i] > max) {
+        out.push_back(BottomTrees[i]);
+      } else {
+        out.push_back(max);
+      }
     }
   }
+
+
   return out;
 }
 

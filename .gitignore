@@ -9,3 +9,4 @@ TMTI_1.0.tar.gz
 src/cppfunctions.o
 src/RcppExports.o
 *.so
+.DS_Store
