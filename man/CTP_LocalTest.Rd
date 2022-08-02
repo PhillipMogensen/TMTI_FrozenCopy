@@ -10,7 +10,7 @@ CTP_LocalTest(
   pvals,
   alpha = 0.05,
   is.sorted = FALSE,
-  threshold = alpha,
+  EarlyStop = FALSE,
   ...
 )
 
@@ -26,8 +26,8 @@ localTest_CTP(localTest, pvals, alpha = 0.05, is.sorted = FALSE, ...)
 \item{is.sorted}{Logical, indicating whether the supplied p-values are already
 is.sorted. Defaults to FALSE.}
 
-\item{threshold}{Only p-values below this threshold will be adjusted. If all
-p-values should be adjusted, set threshold = 1. Defaults to alpha.}
+\item{EarlyStop}{Logical indicating whether to exit as soon as a non-significant
+p-value is found. Defaults to FALSE.}
 
 \item{...}{Additional arguments}
 

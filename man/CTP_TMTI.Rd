@@ -13,6 +13,7 @@ CTP_TMTI(
   tau = NULL,
   K = NULL,
   is.sorted = FALSE,
+  EarlyStop = FALSE,
   ...
 )
 
@@ -48,6 +49,9 @@ then either TMTI (default) or tTMTI is used.}
 
 \item{is.sorted}{Logical, indicating the p-values are pre-sorted. Defaults
 to FALSE.}
+
+\item{EarlyStop}{Logical indicating whether to exit as soon as a non-significant
+p-value is found. Defaults to FALSE.}
 
 \item{...}{Additional arguments}
 }

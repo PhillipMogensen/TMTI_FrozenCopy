@@ -10,7 +10,6 @@
 #' is important that this vector: 1) contains only the truncated p-values (i.e,
 #' those that fall below the truncation point) and 2) is sorted.
 #' @param m The total (i.e., non-truncated) number of p-values.
-#' @export
 MakeZ_C <- function(pvals, m) {
     .Call('_TMTI_MakeZ_C', PACKAGE = 'TMTI', pvals, m)
 }
@@ -24,7 +23,6 @@ MakeZ_C <- function(pvals, m) {
 #' is important that this vector: 1) contains only the truncated p-values (i.e,
 #' those that fall below the truncation point) and 2) is sorted.
 #' @param m The total (i.e., non-truncated) number of p-values.
-#' @export
 MakeY_C <- function(pvals, m) {
     .Call('_TMTI_MakeY_C', PACKAGE = 'TMTI', pvals, m)
 }
@@ -40,7 +38,6 @@ MakeY_C <- function(pvals, m) {
 #' @param n A positive number (or Inf) indicating which type of local minimum
 #' to consider. Defaults to Infm, corresponding to the global minimum.
 #' @param m The total (i.e., non-truncated) number of p-values.
-#' @export
 MakeZ_C_nsmall <- function(pvals, n, m) {
     .Call('_TMTI_MakeZ_C_nsmall', PACKAGE = 'TMTI', pvals, n, m)
 }
@@ -59,7 +56,6 @@ MakeZ_C_nsmall <- function(pvals, n, m) {
 #' @param EarlyStop Logical indicating whether to exit as soon as a non-significant
 #' p-value is found.
 #' @param verbose Logical indicating whether to print progress.
-#' @export
 TestSet_C <- function(LocalTest, pSub, pRest, alpha, is_subset_sequence, EarlyStop, verbose) {
     .Call('_TMTI_TestSet_C', PACKAGE = 'TMTI', LocalTest, pSub, pRest, alpha, is_subset_sequence, EarlyStop, verbose)
 }
@@ -73,11 +69,11 @@ TestSet_C <- function(LocalTest, pSub, pRest, alpha, is_subset_sequence, EarlySt
 #' @param f A function that iterates LocalTest over the relevant test tree.
 #' In practice, this is called as TestSet_C.
 #' @param pvals A vector of p-values.
-#' @param threshold A double to threshold p-values at. That is, only marginal
-#' p-values that are below this threshold will be adjusted.
-#' @export
-FullCTP_C <- function(LocalTest, f, pvals, threshold) {
-    .Call('_TMTI_FullCTP_C', PACKAGE = 'TMTI', LocalTest, f, pvals, threshold)
+#' @param EarlyStop Logical indicating whether to exit as soon as a non-significant
+#' p-value is found.
+#' @param alpha Significance level. This is only used if EarlyStop = TRUE
+FullCTP_C <- function(LocalTest, f, pvals, EarlyStop, alpha) {
+    .Call('_TMTI_FullCTP_C', PACKAGE = 'TMTI', LocalTest, f, pvals, EarlyStop, alpha)
 }
 
 #' Leading NA
@@ -88,7 +84,6 @@ FullCTP_C <- function(LocalTest, f, pvals, threshold) {
 #' @param LocalTest A function that returns a double in (0, 1).
 #' @param pvals A vector of p-values.
 #' @param alpha A double indicating the significance level
-#' @export
 TopDown_C <- function(LocalTest, pvals, alpha) {
     .Call('_TMTI_TopDown_C', PACKAGE = 'TMTI', LocalTest, pvals, alpha)
 }

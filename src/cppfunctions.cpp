@@ -10,7 +10,6 @@ using namespace Rcpp;
 //' is important that this vector: 1) contains only the truncated p-values (i.e,
 //' those that fall below the truncation point) and 2) is sorted.
 //' @param m The total (i.e., non-truncated) number of p-values.
-//' @export
 // [[Rcpp::export]]
 double MakeZ_C(NumericVector pvals, int m) {
   int m_p = pvals.size();
@@ -34,7 +33,6 @@ double MakeZ_C(NumericVector pvals, int m) {
 //' is important that this vector: 1) contains only the truncated p-values (i.e,
 //' those that fall below the truncation point) and 2) is sorted.
 //' @param m The total (i.e., non-truncated) number of p-values.
-//' @export
 // [[Rcpp::export]]
 NumericVector MakeY_C(NumericVector pvals, int m) {
   int m_p = pvals.size();
@@ -57,7 +55,6 @@ NumericVector MakeY_C(NumericVector pvals, int m) {
 //' @param n A positive number (or Inf) indicating which type of local minimum
 //' to consider. Defaults to Infm, corresponding to the global minimum.
 //' @param m The total (i.e., non-truncated) number of p-values.
-//' @export
 // [[Rcpp::export]]
 double MakeZ_C_nsmall(NumericVector pvals, int n, int m) {
   int m_p = pvals.size();
@@ -110,7 +107,6 @@ double MakeZ_C_nsmall(NumericVector pvals, int n, int m) {
 //' @param EarlyStop Logical indicating whether to exit as soon as a non-significant
 //' p-value is found.
 //' @param verbose Logical indicating whether to print progress.
-//' @export
 // [[Rcpp::export]]
 double TestSet_C (
     Function LocalTest,
@@ -174,14 +170,15 @@ double TestSet_C (
 //' @param f A function that iterates LocalTest over the relevant test tree.
 //' In practice, this is called as TestSet_C.
 //' @param pvals A vector of p-values.
-//' @param threshold A double to threshold p-values at. That is, only marginal
-//' p-values that are below this threshold will be adjusted.
-//' @export
+//' @param EarlyStop Logical indicating whether to exit as soon as a non-significant
+//' p-value is found.
+//' @param alpha Significance level. This is only used if EarlyStop = TRUE
 // [[Rcpp::export]]
 std::vector<double> FullCTP_C (Function LocalTest,
                             Function f,
                             std::deque<double> pvals,
-                            double threshold) {
+                            bool EarlyStop,
+                            double alpha) {
   std::vector<double> BottomTrees;
   std::vector<double> TopTree;
   std::vector<double> out;
@@ -189,19 +186,21 @@ std::vector<double> FullCTP_C (Function LocalTest,
   int m_max;
 
   int m = pvals.size();
-  if (threshold < 1) {
-    m_max = std::accumulate(pvals.begin(), pvals.end(), 0,
-                                [&](double a, double b){return a + (b < threshold);});
+
+  if (EarlyStop) {
+    m_max = m - 1;
     for (int i = 0; i < m_max; i++) {
       TopTree.push_back(*REAL(LocalTest(pvals)));
       double p = pvals.front();
       pvals.pop_front();
       BottomTrees.push_back(*REAL(f(p, pvals)));
+      if ((TopTree.back() > alpha) | (BottomTrees.back() > alpha)) {
+        break;
+      }
     }
-    TopTree.push_back(pvals.front());
 
-
-    for (int i = 0; i < m_max; i++) {
+    int mm = TopTree.size();
+    for (int i = 0; i < mm; i++) {
       max = *std::max_element(TopTree.begin(), TopTree.begin() + i + 1);
       if (BottomTrees[i] > max) {
         out.push_back(BottomTrees[i]);
@@ -243,7 +242,6 @@ std::vector<double> FullCTP_C (Function LocalTest,
 //' @param LocalTest A function that returns a double in (0, 1).
 //' @param pvals A vector of p-values.
 //' @param alpha A double indicating the significance level
-//' @export
 // [[Rcpp::export]]
 int TopDown_C (Function LocalTest,
                std::deque<double> pvals,

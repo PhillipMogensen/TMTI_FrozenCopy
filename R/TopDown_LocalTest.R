@@ -151,7 +151,7 @@ TopDown_LocalTest = function(LocalTest,
         "Confidence set for the number of false hypotheses is {",
         out,
         ",..., ",
-        min(length(pvals), length(subset)),
+        if (is.null(subset)) length(pvals) else length(subset),
         "}\n"
       )
     )

@@ -44,12 +44,13 @@ if setting chunksize = mc.cores, each time a parallel computation is set up,
 each worker will perform only a single task. If mc.cores > chunksize, some
 threads will be inactive.}
 
-\item{direction}{string that is equal to either "increasing"/"i" or "decreasing"/d.
+\item{direction}{string that is equal to either "increasing"/"i", "decreasing"/"d" or "binary"/"b".
 Determines the search direction. "increasing" computes the exact adjusted p-value
 for all those hypotheses that can be rejected (while controlling the FWER),
 but is potentially slower than "decreasing". "decreasing" computes on the largest
 p-value of those that can be rejected, but identifies all hypotheses that can
-be rejected. Defaults to "increasing" and has no effect when mc.cores > 1.}
+be rejected. "binary" performs a binary search for the number of hypotheses
+that can be rejected with FWER control.  Defaults to "increasing". Has no effect when mc.cores > 1.}
 
 \item{parallel.direction}{A string that is either "breadth" or "depth"
 (or abbreviated to "b" or "d), indicating in which direction to parallelize.

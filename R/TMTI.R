@@ -66,7 +66,7 @@ TMTI = function(pvals,
   }
 
   if (n >= m) {
-    Z = TMTI::MakeZ_C(pvals, m)
+    Z = MakeZ_C(pvals, m)
   } else {
     # Y = TMTI::MakeY_C(pvals = pvals, m)
     # Z = Y[.GetMinima(Y, n)]

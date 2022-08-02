@@ -16,12 +16,13 @@
 #' if setting chunksize = mc.cores, each time a parallel computation is set up,
 #' each worker will perform only a single task. If mc.cores > chunksize, some
 #' threads will be inactive.
-#' @param direction string that is equal to either "increasing"/"i" or "decreasing"/d.
+#' @param direction string that is equal to either "increasing"/"i", "decreasing"/"d" or "binary"/"b".
 #' Determines the search direction. "increasing" computes the exact adjusted p-value
 #' for all those hypotheses that can be rejected (while controlling the FWER),
 #' but is potentially slower than "decreasing". "decreasing" computes on the largest
 #' p-value of those that can be rejected, but identifies all hypotheses that can
-#' be rejected. Defaults to "increasing" and has no effect when mc.cores > 1.
+#' be rejected. "binary" performs a binary search for the number of hypotheses
+#' that can be rejected with FWER control.  Defaults to "increasing". Has no effect when mc.cores > 1.
 #' @param parallel.direction A string that is either "breadth" or "depth"
 #' (or abbreviated to "b" or "d), indicating in which direction to parallelize.
 #' Breadth-first parallelization uses a more efficient C++ implementation to
@@ -77,7 +78,7 @@ adjust_LocalTest = function(LocalTest,
   if (mc.cores == 1) {
     .f = function(i, es = EarlyStop) {
       if (verbose) {
-        cat(sprintf("\rAdjusting p-value %i of %i.", i, m2))
+        cat(sprintf("\nAdjusting p-value %i of %i.\n", i, m2))
       }
 
       out = TMTI::TestSet_LocalTest(
@@ -97,7 +98,7 @@ adjust_LocalTest = function(LocalTest,
       for (i in seq(m2)) {
         results[[i]] = .f(i)
         if (results[[i]] >= alpha & EarlyStop) {
-          message(paste0("Adjusted p-value ", i, " was above alpha, implying that the remaining are also above alpha. Exiting"))
+          # message(paste0("Adjusted p-value ", i, " was above alpha, implying that the remaining are also above alpha. Exiting"))
           break
         }
       }
@@ -111,7 +112,7 @@ adjust_LocalTest = function(LocalTest,
       for (i in m2:1) {
         results[[i]] = .f(i, TRUE)
         if ((results[[i]] < alpha) & (i > 1)) {
-          message(paste0("Adjusted p-value ", i, " is below alpha, implying that the remaining are also below alpha. Exiting"))
+          # message(paste0("Adjusted p-value ", i, " is below alpha, implying that the remaining are also below alpha. Exiting"))
           brokeEarly = TRUE
           break
         }
@@ -137,6 +138,33 @@ adjust_LocalTest = function(LocalTest,
           )
         )
       }
+    } else if (tolower(direction) == "binary" | tolower(direction) == "b") {
+      low  = 1
+      high = if(AdjustAll) m2 else m2 + 1
+      while (TRUE) {
+        mid = floor((low + high) / 2)
+        p = .f(mid, TRUE)
+        if (p < alpha) {
+          low = mid + 1
+        } else {
+          high = mid
+        }
+        if (verbose)
+          cat(sprintf("\nlow = %i, mid = %i, high = %i", low, mid, high))
+        if (high == low) {
+          if (p < alpha)
+            R = mid + 1
+          else
+            R = mid
+          break
+        } else if (low > high) {
+          R = low
+          break
+        }
+      }
+      if (verbose)
+        cat(sprintf("\rThere are %i hypotheses that can be rejected with FWER control", R - 1))
+      return (R - 1)
     }
   } else if (any(tolower(parallel.direction) == c("d", "depth"))) {
     .f = function(i, es = EarlyStop) {
@@ -162,7 +190,7 @@ adjust_LocalTest = function(LocalTest,
     for (i in seq(m2)) {
       results[[i]] = .f(i)
       if (results[[i]] >= alpha & EarlyStop) {
-        message(paste0("Adjusted p-value ", i, " was above alpha, implying that the remaining are also above alpha. Exiting"))
+        # message(paste0("Adjusted p-value ", i, " was above alpha, implying that the remaining are also above alpha. Exiting"))
         break
       }
     }

@@ -4,7 +4,7 @@
 \alias{FullCTP_C}
 \title{Leading NA}
 \usage{
-FullCTP_C(LocalTest, f, pvals, threshold)
+FullCTP_C(LocalTest, f, pvals, EarlyStop, alpha)
 }
 \arguments{
 \item{LocalTest}{A function that returns a double in (0, 1).}
@@ -14,8 +14,10 @@ In practice, this is called as TestSet_C.}
 
 \item{pvals}{A vector of p-values.}
 
-\item{threshold}{A double to threshold p-values at. That is, only marginal
-p-values that are below this threshold will be adjusted.}
+\item{EarlyStop}{Logical indicating whether to exit as soon as a non-significant
+p-value is found.}
+
+\item{alpha}{Significance level. This is only used if EarlyStop = TRUE}
 }
 \description{
 Tests a user-specified subset in a CTP, using a user-supplied local test

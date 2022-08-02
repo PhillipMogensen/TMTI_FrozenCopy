@@ -34,11 +34,6 @@ gamma_bootstrapper = function(m,
   } else if (m < 1) {
     stop("Please supply a positive integer for m")
   } else {
-    # if (log.p)
-    #   xtrans = log
-    # else
-    #   xtrans = identity
-
     forCDF = parallel::mclapply(
       1:B,
       function(i) {
@@ -55,7 +50,7 @@ gamma_bootstrapper = function(m,
         }
 
         if (n >= m) {
-          Z = TMTI::MakeZ_C(pvals, m)
+          Z = MakeZ_C(pvals, m)
         } else {
           Z = MakeZ_C_nsmall(pvals, n, m)
         }

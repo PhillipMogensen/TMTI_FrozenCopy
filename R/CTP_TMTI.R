@@ -16,6 +16,8 @@
 #' then either TMTI (default) or tTMTI is used.
 #' @param is.sorted Logical, indicating the p-values are pre-sorted. Defaults
 #' to FALSE.
+#' @param EarlyStop Logical indicating whether to exit as soon as a non-significant
+#' p-value is found. Defaults to FALSE.
 #' @param ... Additional arguments
 #'
 #' @return A data.frame containing:
@@ -38,38 +40,19 @@ CTP_TMTI = function(pvals, alpha = 0.05, B = 1e3,
                     gammaList = NULL,
                     tau = NULL, K = NULL,
                     is.sorted = FALSE,
+                    EarlyStop = FALSE,
                     ...) {
-  if (is.sorted) {
-    ord = 1:length(pvals)
-  } else {
-    ord = order(pvals)
-    pvals = sort(pvals)
-  }
-
   LocalTest = function (x) {
     TMTI::TMTI(x, tau = tau, K = K, gamma = gammaList[[length(x)]])
   }
 
-  f = function (x, y) {
-    TMTI::TestSet_C (
-      LocalTest = LocalTest,
-      pSub = x,
-      pRest = y,
-      alpha = 0.05,
-      is_subset_sequence = TRUE,
-      EarlyStop = FALSE,
-      verbose = FALSE
-    )
-  }
-
-  p_adjusted = FullCTP_C (
-    LocalTest,
-    f,
-    pvals
-  )
-  data.frame (
-    "p_adjusted" = p_adjusted,
-    "index"      = ord
+  CTP_LocalTest (
+    LocalTest = LocalTest,
+    pvals = pvals,
+    alpha = alpha,
+    is.sorted = is.sorted,
+    EarlyStop = EarlyStop,
+    ...
   )
 }
 
@@ -83,36 +66,14 @@ TMTI_CTP = function(pvals, alpha = 0.05, B = 1e3,
                     ...) {
   .Deprecated(new = "CTP_CTMI")
 
-  if (is.sorted) {
-    ord = 1:length(pvals)
-  } else {
-    ord = order(pvals)
-    pvals = sort(pvals)
-  }
-
-  LocalTest = function (x) {
-    TMTI::TMTI(x, tau = tau, K = K, gamma = gammaList[[length(x)]])
-  }
-
-  f = function (x, y) {
-    TMTI::TestSet_C (
-      LocalTest = LocalTest,
-      pSub = x,
-      pRest = y,
-      alpha = 0.05,
-      is_subset_sequence = TRUE,
-      EarlyStop = FALSE,
-      verbose = FALSE
-    )
-  }
-
-  p_adjusted = FullCTP_C (
-    LocalTest,
-    f,
-    pvals
-  )
-  data.frame (
-    "p_adjusted" = p_adjusted,
-    "index"      = ord
+  CTP_TMTI (
+    pvals = pvals,
+    alpha = alpha,
+    B = B,
+    gammaList = gammaList,
+    tau = tau,
+    K = K,
+    is.sorted = is.sorted,
+    ...
   )
 }
