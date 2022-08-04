@@ -56,6 +56,19 @@ adjust_LocalTest = function(LocalTest,
                              parallel.direction = "breadth",
                              AdjustAll = FALSE,
                              ...) {
+  if (AdjustAll & mc.cores <= 1) {
+    return (
+      CTP_LocalTest(
+        LocalTest = LocalTest,
+        pvals = pvals,
+        alpha = alpha,
+        is.sorted = !is.unsorted(pvals),
+        EarlyStop = EarlyStop,
+        ...
+      )
+    )
+  }
+
   if (AdjustAll) {
     m2 = length(pvals)
   } else {
@@ -186,22 +199,74 @@ adjust_LocalTest = function(LocalTest,
       )
       out
     }
-    results = list()
-    for (i in seq(m2)) {
-      results[[i]] = .f(i)
-      if (results[[i]] >= alpha & EarlyStop) {
-        # message(paste0("Adjusted p-value ", i, " was above alpha, implying that the remaining are also above alpha. Exiting"))
-        break
+    if (any(tolower(direction) == c("i", "increasing"))) {
+      results = list()
+      for (i in seq(m2)) {
+        results[[i]] = .f(i)
+        if (results[[i]] >= alpha & EarlyStop) {
+          # message(paste0("Adjusted p-value ", i, " was above alpha, implying that the remaining are also above alpha. Exiting"))
+          break
+        }
       }
-    }
-    return(
-      data.frame(
-        "p"     = unlist(results),
-        "index" = ord[1:length(results)]
+      return(
+        data.frame(
+          "p"     = unlist(results),
+          "index" = ord[1:length(results)]
+        )
       )
-    )
+    } else if (any(tolower(direction) == c('d', 'decreasing'))) {
+      results = list()
+      for (i in rev(seq(m2))) {
+        results[[i]] = .f(i)
+        if (results[[i]] < alpha) {
+          out = i
+          cat(sprintf("There are %i p-values that can be rejected with FWER control.\nAn upper bound for these is %.4f%%",
+                      out, 100*results[[i]] ))
+          return(i)
+        }
+      }
+      return(
+        data.frame(
+          "p"     = unlist(results),
+          "index" = ord[1:length(results)]
+        )
+      )
+    } else if (any(tolower(direction) == c('b', 'binary'))) {
+      low  = 1
+      high = if(AdjustAll) m2 else m2 + 1
+      while (TRUE) {
+        mid = floor((low + high) / 2)
+        p = .f(mid, TRUE)
+        if (p < alpha) {
+          low = mid + 1
+        } else {
+          high = mid
+        }
+        if (verbose)
+          cat(sprintf("\nlow = %i, mid = %i, high = %i", low, mid, high))
+        if (high == low) {
+          if (p < alpha)
+            R = mid + 1
+          else
+            R = mid
+          break
+        } else if (low > high) {
+          R = low
+          break
+        }
+      }
+      cat(sprintf("\rThere are %i hypotheses that can be rejected with FWER control", R - 1))
+      return (R - 1)
+    }
+
   } else if (any(tolower(parallel.direction) == c("b", "breadth"))) {
-    chunks  = split(seq(m2), ceiling(seq(m2) / chunksize))
+    if (any(tolower(direction) == c('b', 'binary')))
+      stop("Binary search only works with parallel.direction == 'breadth'")
+
+    chunks  = if (any(tolower(direction) == c("i", "increasing")))
+      split(seq(m2), ceiling(seq(m2) / chunksize))
+    else
+      split(rev(seq(m2)), ceiling(seq(m2) / chunksize))
     results = list()
     counter = 1
     for (x in chunks) {
@@ -222,8 +287,18 @@ adjust_LocalTest = function(LocalTest,
         mc.cores = mc.cores
       ))
       counter = counter + 1
-      if ((any(unlist(results) > alpha)) & EarlyStop)
-        break
+      if (any(tolower(direction) == c("i", "increasing"))) {
+        if ((any(unlist(results) > alpha)) & EarlyStop)
+          break
+      } else {
+        if (any(unlist(results) < alpha)) {
+          out = m2 + 1 - which(unlist(results) < alpha)[1]
+          cat(sprintf("There are %i p-values that can be rejected with FWER control.\nAn upper bound for these is %.4f%%",
+                      out, 100*unlist(results)[which(unlist(results) < alpha)[1]] ))
+          return (out)
+        }
+      }
+
     }
     return(
       data.frame(
