@@ -1,8 +1,8 @@
 #' Computes the analytical version of the rtMTI_infty CDF. When m>100, this should
 #' not be used.
 #'
-#' @param x Point in which to evaluate the CDF
-#' @param m Number of independent tests to combine
+#' @param x Point in which to evaluate the CDF.
+#' @param m Number of independent tests to combine.
 #' @param K Integer; the truncation point to use.
 #'
 #' @return The probability that the test statistic is at most x assuming

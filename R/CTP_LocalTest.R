@@ -3,17 +3,16 @@
 #' @name CTP_LocalTest
 #' @aliases localTest_CTP
 #' @param LocalTest A function which defines the choice of local test to use.
-#' @param pvals A vector of p-values
-#' @param alpha Level to perform each intersection test at. Defaults to 0.05
+#' @param pvals A vector of p-values.
+#' @param alpha Level to perform each intersection test at. Defaults to 0.05.
 #' @param is.sorted Logical, indicating whether the supplied p-values are already
 #' is.sorted. Defaults to FALSE.
 #' @param EarlyStop Logical indicating whether to exit as soon as a non-significant
 #' p-value is found. Defaults to FALSE.
-#' @param ... Additional arguments
+#' @param ... Additional arguments.
 #'
-#' @return A data.frame containing:
-#' * p_adjust: The CTP adjusted p-value, controlling the FWER strongly.
-#' * Index: The original index of the unsorted p-value inputs.
+#' @return A data.frame containing adjusted p-values and the original index of
+#' the p-values.
 #' @export
 #'
 #' @examples
@@ -70,21 +69,8 @@ CTP_LocalTest = function(
 
 #'
 #' @rdname CTP_LocalTest
-#' @param localTest A function specifying a local test.
+#' @param localTest A function specifying a local test (deprecated).
 #' @export
-#'
-#' @examples
-#' ## Simulate some p-values
-#' ## The first 10 are from false hypotheses, the next 10 are from true
-#' pvals = c(
-#'   rbeta(10, 1, 20), ## Mean value of .05
-#'   runif(10)
-#' )
-#' ## Perform the CTP using a local Bonferroni test
-#' CTP_LocalTest(function(x) {
-#'   min(c(length(x) * min(x), 1))
-#' }, pvals)
-#'
 
 localTest_CTP = function(localTest, pvals, alpha = 0.05, is.sorted = FALSE, ...) {
   if (is.sorted) {

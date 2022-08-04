@@ -18,10 +18,10 @@ TMTI(
 )
 }
 \arguments{
-\item{pvals}{A vector of pvalues}
+\item{pvals}{A vector of pvalues.}
 
 \item{n}{A positive number (or Inf) indicating which type of local minimum
-to consider. Defaults to Infm, corresponding to the global minimum.}
+to consider. Defaults to Inf, corresponding to the global minimum.}
 
 \item{tau}{Number between 0 and 1 or NULL, describing the truncation level.}
 
@@ -29,7 +29,7 @@ to consider. Defaults to Infm, corresponding to the global minimum.}
 
 \item{gamma}{Function; function to be used as the gamma approximation. If NULL, then
 the gamma function will be bootstrapped assuming independence. Defaults
-to NULL}
+to NULL.}
 
 \item{B}{Numeric; number of bootstrap replicates to be used when estimating
 the gamma function. If a gamma is supplied, this argument is ignored.
@@ -42,7 +42,7 @@ bootstrapped or user supplied instead.}
 \item{is.sorted}{Logical, indicating whether the supplied p-values are already
 is.sorted. Defaults to FALSE.}
 
-\item{...}{Additional parameters}
+\item{...}{Additional parameters.}
 }
 \value{
 A p-value from the TMTI test

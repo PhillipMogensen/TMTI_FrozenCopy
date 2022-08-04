@@ -31,7 +31,7 @@ TopDown_localTest(
 \arguments{
 \item{LocalTest}{A function specifying a local test.}
 
-\item{pvals}{A vector of p-values}
+\item{pvals}{A vector of p-values.}
 
 \item{subset}{Numeric vector specifying a subset a p-values to estimate a
 confidence set for the number of false hypotheses for. Defaults to NULL
@@ -39,10 +39,10 @@ corresponding to estimating a confidence set for the number of false
 hypotheses in the entire set.}
 
 \item{alpha}{Level in [0,1] at which to generate confidence set. Defaults
-to 0.05}
+to 0.05.}
 
 \item{verbose}{Logical, indicating whether or not to write out the progress.
-Defaults to TRUE}
+Defaults to TRUE.}
 
 \item{mc.cores}{Integer specifying the number of cores to parallelize onto.}
 
@@ -51,13 +51,13 @@ if setting chunksize = mc.cores, each time a parallel computation is set up,
 each worker will perform only a single task. If mc.cores > chunksize, some
 threads will be inactive.}
 
-\item{...}{Additional parameters}
+\item{...}{Additional parameters.}
 
-\item{localTest}{A function specifying a local test.}
+\item{localTest}{A function specifying a local test (deprecated).}
 }
 \value{
-A lower 1-alpha bound for the number of false hypotheses among the
-set of supplied p-values
+A 1-alpha bound lower for the number of false hypotheses among the
+specified subset of the supplied p-values
 }
 \description{
 TopDown LocalTest algorithm for estimating a 1-alpha confidence set for the number

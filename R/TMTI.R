@@ -1,13 +1,13 @@
 #' Computes the TMTI test for a joint hypothesis given input p-values.
 #'
-#' @param pvals A vector of pvalues
+#' @param pvals A vector of pvalues.
 #' @param n A positive number (or Inf) indicating which type of local minimum
-#' to consider. Defaults to Infm, corresponding to the global minimum.
+#' to consider. Defaults to Inf, corresponding to the global minimum.
 #' @param tau Number between 0 and 1 or NULL, describing the truncation level.
 #' @param K Integer between >1 and m describing the truncation index.
 #' @param gamma Function; function to be used as the gamma approximation. If NULL, then
 #' the gamma function will be bootstrapped assuming independence. Defaults
-#' to NULL
+#' to NULL.
 #' @param m_max Integer; the highest number of test for which the analytical
 #' computation of the TMTI CDF is used. When m is above m_max it will be
 #' bootstrapped or user supplied instead.
@@ -16,7 +16,7 @@
 #' Defaults to 1e3.
 #' @param is.sorted Logical, indicating whether the supplied p-values are already
 #' is.sorted. Defaults to FALSE.
-#' @param ... Additional parameters
+#' @param ... Additional parameters.
 #'
 #' @return A p-value from the TMTI test
 #' @export
@@ -92,20 +92,4 @@ TMTI = function(pvals,
   }
 
   gamma(Z)
-}
-
-tTMTI = function(pvals,
-                  tau,
-                  n = Inf,
-                  gamma = NULL,
-                  ...) {
-  TMTI(pvals, n = n, tau = tau, K = NULL, gamma = gamma, ...)
-}
-
-rtTMTI = function(pvals,
-                   K,
-                   n = Inf,
-                   gamma = NULL,
-                   ...) {
-  TMTI(pvals, n = n, tau = NULL, K = K, gamma = gamma, ...)
 }

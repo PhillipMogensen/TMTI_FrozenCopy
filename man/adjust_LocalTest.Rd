@@ -2,7 +2,7 @@
 % Please edit documentation in R/adjust_LocalTest.R
 \name{adjust_LocalTest}
 \alias{adjust_LocalTest}
-\title{Adjust all marginally significant using a Closed Testing Procedeure and a
+\title{Adjust all p-values using a Closed Testing Procedure and a
 user-defined local test which satisfies the quadratic shortcut given in Mogensen and Markussen (2021)}
 \usage{
 adjust_LocalTest(
@@ -23,34 +23,34 @@ adjust_LocalTest(
 \arguments{
 \item{LocalTest}{A function specifying a local test.}
 
-\item{pvals}{vector of pvalues}
+\item{pvals}{vector of p-values.}
 
-\item{alpha}{signicance level. Defaults to 0.05}
+\item{alpha}{significance level. Defaults to 0.05.}
 
 \item{is.sorted}{Logical, indicating whether the supplied p-values are already
-is.sorted. Defaults to FALSE.}
+sorted. Defaults to FALSE.}
 
 \item{EarlyStop}{Logical; set to TRUE to stop as soon as a hypothesis can be
 accepted at level alpha. This speeds up the procedure, but now only provides
-lower bounds on the p-values for the global test.}
+upper bounds on the adjusted p-values that are below alpha.}
 
-\item{verbose}{Logical; set to TRUE to print progress.}
+\item{verbose}{Logical; set to TRUE to print progress. Defaults to FALSE.}
 
-\item{mc.cores}{Number of cores to parallelize onto. If mc.cores > 1 the procedure
-cannot stop early and may then be slower than with mc.cores = 1.}
+\item{mc.cores}{Number of cores to parallelize onto.}
 
 \item{chunksize}{Integer indicating the size of chunks to parallelize. E.g.,
 if setting chunksize = mc.cores, each time a parallel computation is set up,
 each worker will perform only a single task. If mc.cores > chunksize, some
 threads will be inactive.}
 
-\item{direction}{string that is equal to either "increasing"/"i", "decreasing"/"d" or "binary"/"b".
-Determines the search direction. "increasing" computes the exact adjusted p-value
+\item{direction}{String that is equal to either "increasing"/"i", "decreasing"/"d" or "binary"/"b".
+Determines the search direction. When set to"increasing", the function computes the exact adjusted p-value
 for all those hypotheses that can be rejected (while controlling the FWER),
-but is potentially slower than "decreasing". "decreasing" computes on the largest
-p-value of those that can be rejected, but identifies all hypotheses that can
-be rejected. "binary" performs a binary search for the number of hypotheses
-that can be rejected with FWER control.  Defaults to "increasing". Has no effect when mc.cores > 1.}
+but is potentially slower than "decreasing". "decreasing"identifies all hypotheses that can
+be rejected with FWER control, but does not compute the actual adjusted p-values.
+"binary" performs a binary search for the number of hypotheses
+that can be rejected with FWER control.  Defaults to "increasing". Note that
+'binary' does not work with parallel.direction == 'breadth'.}
 
 \item{parallel.direction}{A string that is either "breadth" or "depth"
 (or abbreviated to "b" or "d), indicating in which direction to parallelize.
@@ -62,13 +62,15 @@ can be rejected.}
 \item{AdjustAll}{Logical, indicating whether to adjust all p-values (TRUE)
 or only those that are marginally significant (FALSE). Defaults to FALSE.}
 
-\item{...}{Additional arguments}
+\item{...}{Additional arguments.}
 }
 \value{
 a data.frame containing adjusted p-values and their respective indices.
+If direction == 'decreasing' or 'binary', an integer describing the number of
+hypotheses that can be rejected with FWER control is returned.
 }
 \description{
-Adjust all marginally significant using a Closed Testing Procedeure and a
+Adjust all p-values using a Closed Testing Procedure and a
 user-defined local test which satisfies the quadratic shortcut given in Mogensen and Markussen (2021)
 }
 \examples{

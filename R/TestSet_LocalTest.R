@@ -3,10 +3,10 @@
 #' @name TestSet_LocalTest
 #' @aliases TestSet_localTest
 #' @param LocalTest Function which defines a combination test.
-#' @param pvals Numeric vector of p-values
-#' @param subset Numeric vector; the subset to be tested
+#' @param pvals Numeric vector of p-values.
+#' @param subset Numeric vector; the subset to be tested.
 #' @param alpha Numeric; the level to test at, if stopping early. Defaults
-#' to 0.05
+#' to 0.05.
 #' @param EarlyStop Logical; set to TRUE to stop as soon as a hypothesis can be
 #' accepted at level alpha. This speeds up the procedure, but now only provides
 #' lower bounds on the p-values for the global test.
@@ -18,7 +18,7 @@
 #' threads will be inactive.
 #' @param is.sorted Logical, indicating whether the supplied p-values are already
 #' is.sorted. Defaults to FALSE.
-#' @param ... Additional arguments to be passed onto TMTI()
+#' @param ... Additional arguments.
 #'
 #' @return The adjusted p-value for the test of the hypothesis that there are
 #' no false hypotheses among the selected subset.
@@ -110,7 +110,7 @@ TestSet_LocalTest = function(LocalTest,
 
 #'
 #' @rdname TestSet_LocalTest
-#' @param localTest A function specifying a local test.
+#' @param localTest A function specifying a local test (deprecated).
 #' @export
 TestSet_localTest = function(localTest,
                              pvals,

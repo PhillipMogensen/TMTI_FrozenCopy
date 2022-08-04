@@ -19,9 +19,9 @@ localTest_CTP(localTest, pvals, alpha = 0.05, is.sorted = FALSE, ...)
 \arguments{
 \item{LocalTest}{A function which defines the choice of local test to use.}
 
-\item{pvals}{A vector of p-values}
+\item{pvals}{A vector of p-values.}
 
-\item{alpha}{Level to perform each intersection test at. Defaults to 0.05}
+\item{alpha}{Level to perform each intersection test at. Defaults to 0.05.}
 
 \item{is.sorted}{Logical, indicating whether the supplied p-values are already
 is.sorted. Defaults to FALSE.}
@@ -29,30 +29,18 @@ is.sorted. Defaults to FALSE.}
 \item{EarlyStop}{Logical indicating whether to exit as soon as a non-significant
 p-value is found. Defaults to FALSE.}
 
-\item{...}{Additional arguments}
+\item{...}{Additional arguments.}
 
-\item{localTest}{A function specifying a local test.}
+\item{localTest}{A function specifying a local test (deprecated).}
 }
 \value{
-A data.frame containing:
-* p_adjust: The CTP adjusted p-value, controlling the FWER strongly.
-* Index: The original index of the unsorted p-value inputs.
+A data.frame containing adjusted p-values and the original index of
+the p-values.
 }
 \description{
 A Closed Testing Procedure for any local test satisfying the conditions of Mogensen and Markussen (2021) using an O(n^2) shortcut.
 }
 \examples{
-## Simulate some p-values
-## The first 10 are from false hypotheses, the next 10 are from true
-pvals = c(
-  rbeta(10, 1, 20), ## Mean value of .05
-  runif(10)
-)
-## Perform the CTP using a local Bonferroni test
-CTP_LocalTest(function(x) {
-  min(c(length(x) * min(x), 1))
-}, pvals)
-
 ## Simulate some p-values
 ## The first 10 are from false hypotheses, the next 10 are from true
 pvals = c(

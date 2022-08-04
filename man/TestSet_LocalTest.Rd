@@ -34,12 +34,12 @@ TestSet_localTest(
 \arguments{
 \item{LocalTest}{Function which defines a combination test.}
 
-\item{pvals}{Numeric vector of p-values}
+\item{pvals}{Numeric vector of p-values.}
 
-\item{subset}{Numeric vector; the subset to be tested}
+\item{subset}{Numeric vector; the subset to be tested.}
 
 \item{alpha}{Numeric; the level to test at, if stopping early. Defaults
-to 0.05}
+to 0.05.}
 
 \item{EarlyStop}{Logical; set to TRUE to stop as soon as a hypothesis can be
 accepted at level alpha. This speeds up the procedure, but now only provides
@@ -57,9 +57,9 @@ threads will be inactive.}
 \item{is.sorted}{Logical, indicating whether the supplied p-values are already
 is.sorted. Defaults to FALSE.}
 
-\item{...}{Additional arguments to be passed onto TMTI()}
+\item{...}{Additional arguments.}
 
-\item{localTest}{A function specifying a local test.}
+\item{localTest}{A function specifying a local test (deprecated).}
 }
 \value{
 The adjusted p-value for the test of the hypothesis that there are

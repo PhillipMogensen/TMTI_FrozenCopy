@@ -20,7 +20,7 @@ TopDown_TMTI(
 )
 }
 \arguments{
-\item{pvals}{A vector of p-values}
+\item{pvals}{A vector of p-values.}
 
 \item{subset}{Numeric vector specifying a subset a p-values to estimate a
 confidence set for the number of false hypotheses for. Defaults to NULL
@@ -28,14 +28,14 @@ corresponding to estimating a confidence set for the number of false
 hypotheses in the entire set.}
 
 \item{alpha}{Level in [0,1] at which to generate confidence set. Defaults
-to 0.05}
+to 0.05.}
 
 \item{gammaList}{List of pre-specified gamma functions. If NULL, the
 functions will be approximated by bootstrap assuming independence. Defaults
-to NULL}
+to NULL.}
 
 \item{verbose}{Logical, indicating whether or not to write out the progress.
-Defaults to TRUE}
+Defaults to TRUE.}
 
 \item{tau}{Numerical (in (0,1)); threshold to use in tTMTI. If set to NULL,
 then either TMTI (default) or rtTMTI is used.}
@@ -53,10 +53,10 @@ if setting chunksize = mc.cores, each time a parallel computation is set up,
 each worker will perform only a single task. If mc.cores > chunksize, some
 threads will be inactive.}
 
-\item{...}{Additional parameters}
+\item{...}{Additional parameters.}
 }
 \value{
-A lower 1-alpha bound for the number of false hypotheses among the
+A 1-alpha lower bound for the number of false hypotheses among the
 set of supplied p-values
 }
 \description{

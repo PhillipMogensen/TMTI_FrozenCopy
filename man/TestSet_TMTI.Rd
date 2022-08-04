@@ -20,15 +20,15 @@ TestSet_TMTI(
 )
 }
 \arguments{
-\item{pvals}{Numeric vector of p-values}
+\item{pvals}{Numeric vector of p-values.}
 
-\item{subset}{Numeric vector; the subset to be tested}
+\item{subset}{Numeric vector; the subset to be tested.}
 
 \item{alpha}{Numeric; the level to test at, if stopping early. Defaults
-to 0.05}
+to 0.05.}
 
 \item{tau}{Numeric; the treshold to use if using rTMTI. Set to NULL for TMTI
-or rtTMTI. Defaults to NULL}
+or rtTMTI. Defaults to NULL.}
 
 \item{K}{Integer; The number of p-values to use if using rtTMTI. Set to NULL
 for TMTI or tTMTI. Defaults to NULL.}
@@ -39,7 +39,7 @@ lower bounds on the p-values for the global test.}
 
 \item{verbose}{Logical; set to TRUE to print progress.}
 
-\item{gammaList}{List of functions. Must be such that the i'th element
+\item{gammaList}{List of functions. Must be such that the ith element
 is the gamma function for sets of size i. Set to NULL to bootstrap the
 functions assuming independence. Defaults to NULL.}
 
@@ -53,7 +53,7 @@ threads will be inactive.}
 \item{is.sorted}{Logical, indicating the p-values are pre-sorted. Defaults
 to FALSE.}
 
-\item{...}{Additional arguments to be passed onto TMTI()}
+\item{...}{Additional arguments.}
 }
 \value{
 The adjusted p-value for the test of the hypothesis that there are

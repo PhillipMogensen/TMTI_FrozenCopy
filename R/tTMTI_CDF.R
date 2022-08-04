@@ -1,9 +1,9 @@
 #' Computes the analytical version of the tTMTI_infty CDF. When m>100, this should
 #' not be used.
 #'
-#' @param x Point in which to evaluate the CDF
-#' @param m Number of independent tests to combine
-#' @param tau The truncation point of the tTMTI procedure
+#' @param x Point in which to evaluate the CDF.
+#' @param m Number of independent tests to combine.
+#' @param tau The truncation point of the tTMTI procedure.
 #'
 #' @return The probability that the test statistic is at most x assuming
 #' independence under the global null hypothesis.

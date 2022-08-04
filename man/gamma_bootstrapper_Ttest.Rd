@@ -25,10 +25,10 @@ two-sample.}
 Defaults to Inf, corresponding to the global minimum.}
 
 \item{B}{Number of bootstrap replicates. Rule of thumb is to use at least
-10 * m}
+10 * m.}
 
 \item{mc.cores}{Integer denoting the number of cores to use when using
-parallelization, Defaults to 1, corresponding to single-threaded computations}
+parallelization, Defaults to 1, corresponding to single-threaded computations.}
 
 \item{tau}{Numerical (in (0,1)); threshold to use in tTMTI. If set to NULL,
 then either TMTI (default) or rtTMTI is used.}
@@ -38,7 +38,7 @@ then either TMTI (default) or tTMTI is used.}
 }
 \value{
 A list of bootstrapped TMTI CDFs that can be used directly in the
-TMTI_CTP function
+CTP_TMTI function.
 }
 \description{
 Compute a list of TMTI CDFs for one- and two-sample test scenarios

@@ -7,16 +7,16 @@
 #' @param n Number (or Inf) indicating what kind of minimum to consider.
 #' Defaults to Inf, corresponding to the global minimum.
 #' @param B Number of bootstrap replicates. Rule of thumb is to use at least
-#' 10 * m
+#' 10 * m.
 #' @param mc.cores Integer denoting the number of cores to use when using
-#' parallelization, Defaults to 1, corresponding to single-threaded computations
+#' parallelization, Defaults to 1, corresponding to single-threaded computations.
 #' @param tau Numerical (in (0,1)); threshold to use in tTMTI. If set to NULL,
 #' then either TMTI (default) or rtTMTI is used.
 #' @param K Integer; Number of smallest p-values to use in rtTMTI. If se to NULL,
 #' then either TMTI (default) or tTMTI is used.
 #'
 #' @return A list of bootstrapped TMTI CDFs that can be used directly in the
-#' TMTI_CTP function
+#' CTP_TMTI function.
 #' @export
 #'
 #' @examples

@@ -2,11 +2,11 @@
 #'
 #' @name CTP_TMTI
 #' @aliases TMTI_CTP
-#' @param pvals A vector of p-values
-#' @param alpha Level to perform each intersection test at. Defaults to 0.05
+#' @param pvals A vector of p-values.
+#' @param alpha Level to perform each intersection test at. Defaults to 0.05.
 #' @param B Number of bootstrap replications if gamma needs to be approximated.
 #' Not used if specifying a list of functions using the gammaList argument
-#' or if length(pvals) <= 100. Defaults to 1000
+#' or if length(pvals) <= 100. Defaults to 1000.
 #' @param gammaList A list of pre-specified gamma functions. If NULL, gamma
 #' functions will be approximated via bootstrap, assuming independence. Defaults
 #' to NULL.
@@ -18,13 +18,10 @@
 #' to FALSE.
 #' @param EarlyStop Logical indicating whether to exit as soon as a non-significant
 #' p-value is found. Defaults to FALSE.
-#' @param ... Additional arguments
+#' @param ... Additional arguments.
 #'
-#' @return A data.frame containing:
-#'
-#' * p_adjust: The CTP adjusted p-value, controlling the FWER strongly.
-#'
-#' * Index: The original index of the unsorted p-value inputs.
+#' @return A data.frame containing adjusted p-values and the original index of
+#' the p-values.
 #' @export
 #'
 #' @examples

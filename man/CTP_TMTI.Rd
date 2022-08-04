@@ -29,13 +29,13 @@ TMTI_CTP(
 )
 }
 \arguments{
-\item{pvals}{A vector of p-values}
+\item{pvals}{A vector of p-values.}
 
-\item{alpha}{Level to perform each intersection test at. Defaults to 0.05}
+\item{alpha}{Level to perform each intersection test at. Defaults to 0.05.}
 
 \item{B}{Number of bootstrap replications if gamma needs to be approximated.
 Not used if specifying a list of functions using the gammaList argument
-or if length(pvals) <= 100. Defaults to 1000}
+or if length(pvals) <= 100. Defaults to 1000.}
 
 \item{gammaList}{A list of pre-specified gamma functions. If NULL, gamma
 functions will be approximated via bootstrap, assuming independence. Defaults
@@ -53,14 +53,11 @@ to FALSE.}
 \item{EarlyStop}{Logical indicating whether to exit as soon as a non-significant
 p-value is found. Defaults to FALSE.}
 
-\item{...}{Additional arguments}
+\item{...}{Additional arguments.}
 }
 \value{
-A data.frame containing:
-
-* p_adjust: The CTP adjusted p-value, controlling the FWER strongly.
-
-* Index: The original index of the unsorted p-value inputs.
+A data.frame containing adjusted p-values and the original index of
+the p-values.
 }
 \description{
 A Closed Testing Procedure for the TMTI using an O(n^2) shortcut
