@@ -59,12 +59,6 @@ TestSet_LocalTest = function(LocalTest,
 
 
 
-  p_first = LocalTest(pSub)
-  if (p_first > alpha & EarlyStop) {
-    return(p_first)
-  }
-
-
   if (mc.cores <= 1L) {
     out = TestSet_C(
       LocalTest = LocalTest,
@@ -75,8 +69,7 @@ TestSet_LocalTest = function(LocalTest,
       EarlyStop = EarlyStop,
       verbose = verbose
     )
-
-    max(out, p_first)
+    return(out)
   } else {
     .f = function(i) {
       if (is_subset_sequence) {

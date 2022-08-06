@@ -92,6 +92,72 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// TopDown_C_binary
+int TopDown_C_binary(Function LocalTest, NumericVector pvals, double alpha, int low, int high, bool verbose);
+RcppExport SEXP _TMTI_TopDown_C_binary(SEXP LocalTestSEXP, SEXP pvalsSEXP, SEXP alphaSEXP, SEXP lowSEXP, SEXP highSEXP, SEXP verboseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Function >::type LocalTest(LocalTestSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type pvals(pvalsSEXP);
+    Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
+    Rcpp::traits::input_parameter< int >::type low(lowSEXP);
+    Rcpp::traits::input_parameter< int >::type high(highSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(TopDown_C_binary(LocalTest, pvals, alpha, low, high, verbose));
+    return rcpp_result_gen;
+END_RCPP
+}
+// TopDown_C_binary_subset
+int TopDown_C_binary_subset(Function LocalTest, std::vector<double> pSub, std::vector<double> pRest, double alpha, int low, int high, bool verbose);
+RcppExport SEXP _TMTI_TopDown_C_binary_subset(SEXP LocalTestSEXP, SEXP pSubSEXP, SEXP pRestSEXP, SEXP alphaSEXP, SEXP lowSEXP, SEXP highSEXP, SEXP verboseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Function >::type LocalTest(LocalTestSEXP);
+    Rcpp::traits::input_parameter< std::vector<double> >::type pSub(pSubSEXP);
+    Rcpp::traits::input_parameter< std::vector<double> >::type pRest(pRestSEXP);
+    Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
+    Rcpp::traits::input_parameter< int >::type low(lowSEXP);
+    Rcpp::traits::input_parameter< int >::type high(highSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(TopDown_C_binary_subset(LocalTest, pSub, pRest, alpha, low, high, verbose));
+    return rcpp_result_gen;
+END_RCPP
+}
+// kFWER_set_C
+int kFWER_set_C(Function LocalTest, NumericVector pvals, int k, double alpha, int low, int high, bool verbose);
+RcppExport SEXP _TMTI_kFWER_set_C(SEXP LocalTestSEXP, SEXP pvalsSEXP, SEXP kSEXP, SEXP alphaSEXP, SEXP lowSEXP, SEXP highSEXP, SEXP verboseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Function >::type LocalTest(LocalTestSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type pvals(pvalsSEXP);
+    Rcpp::traits::input_parameter< int >::type k(kSEXP);
+    Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
+    Rcpp::traits::input_parameter< int >::type low(lowSEXP);
+    Rcpp::traits::input_parameter< int >::type high(highSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(kFWER_set_C(LocalTest, pvals, k, alpha, low, high, verbose));
+    return rcpp_result_gen;
+END_RCPP
+}
+// FWER_set_C
+int FWER_set_C(Function LocalTest, std::vector<double> pvals, double alpha, int low, int high, bool verbose);
+RcppExport SEXP _TMTI_FWER_set_C(SEXP LocalTestSEXP, SEXP pvalsSEXP, SEXP alphaSEXP, SEXP lowSEXP, SEXP highSEXP, SEXP verboseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Function >::type LocalTest(LocalTestSEXP);
+    Rcpp::traits::input_parameter< std::vector<double> >::type pvals(pvalsSEXP);
+    Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
+    Rcpp::traits::input_parameter< int >::type low(lowSEXP);
+    Rcpp::traits::input_parameter< int >::type high(highSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(FWER_set_C(LocalTest, pvals, alpha, low, high, verbose));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_TMTI_MakeZ_C", (DL_FUNC) &_TMTI_MakeZ_C, 2},
@@ -100,6 +166,10 @@ static const R_CallMethodDef CallEntries[] = {
     {"_TMTI_TestSet_C", (DL_FUNC) &_TMTI_TestSet_C, 7},
     {"_TMTI_FullCTP_C", (DL_FUNC) &_TMTI_FullCTP_C, 5},
     {"_TMTI_TopDown_C", (DL_FUNC) &_TMTI_TopDown_C, 3},
+    {"_TMTI_TopDown_C_binary", (DL_FUNC) &_TMTI_TopDown_C_binary, 6},
+    {"_TMTI_TopDown_C_binary_subset", (DL_FUNC) &_TMTI_TopDown_C_binary_subset, 7},
+    {"_TMTI_kFWER_set_C", (DL_FUNC) &_TMTI_kFWER_set_C, 7},
+    {"_TMTI_FWER_set_C", (DL_FUNC) &_TMTI_FWER_set_C, 6},
     {NULL, NULL, 0}
 };
 

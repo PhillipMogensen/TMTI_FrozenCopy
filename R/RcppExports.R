@@ -88,3 +88,73 @@ TopDown_C <- function(LocalTest, pvals, alpha) {
     .Call('_TMTI_TopDown_C', PACKAGE = 'TMTI', LocalTest, pvals, alpha)
 }
 
+#' Leading NA
+#'
+#' Computes a confidence set for the number of false hypotheses among all hypotheses
+#' using a binary search
+#'
+#'
+#' @param LocalTest A function that returns a double in (0, 1).
+#' @param pvals A vector of p-values.
+#' @param alpha A double indicating the significance level
+#' @param low integer denoting the starting point for the search. Should start at zero.
+#' @param high integer denoting the end point of the search. Should end at pvals.size() - 1.
+#' @param verbose boolean, indicating whether to print progress.
+TopDown_C_binary <- function(LocalTest, pvals, alpha, low, high, verbose) {
+    .Call('_TMTI_TopDown_C_binary', PACKAGE = 'TMTI', LocalTest, pvals, alpha, low, high, verbose)
+}
+
+#' Leading NA
+#'
+#' Computes a confidence set for the number of false hypotheses among a subset of
+#' using a binary search
+#'
+#'
+#' @param LocalTest A function that returns a double in (0, 1).
+#' @param pSub A vector of p-values from the subset of interest.
+#' @param pRest A vector of the remaining p-values.
+#' @param alpha A double indicating the significance level
+#' @param low integer denoting the starting point for the search. Should start at zero.
+#' @param high integer denoting the end point of the search. Should end at pvals.size() - 1.
+#' @param verbose boolean, indicating whether to print progress.
+TopDown_C_binary_subset <- function(LocalTest, pSub, pRest, alpha, low, high, verbose) {
+    .Call('_TMTI_TopDown_C_binary_subset', PACKAGE = 'TMTI', LocalTest, pSub, pRest, alpha, low, high, verbose)
+}
+
+#' Leading NA
+#'
+#' Computes a confidence set for the number of false hypotheses among a subset of
+#' using a binary search
+#'
+#'
+#' @param LocalTest A function that returns a double in (0, 1).
+#' @param pvals A vector of p-values.
+#' @param k integer denoting the k to control the kFWER at.
+#' @param alpha A double indicating the significance level
+#' @param low integer denoting the starting point for the search. Should start at zero.
+#' @param high integer denoting the end point of the search. Should end at pvals.size() - 1.
+#' @param verbose boolean, indicating whether to print progress.
+#' @return The number of hypotheses that can be rejected with kFWER control at a user
+#' specific k.
+kFWER_set_C <- function(LocalTest, pvals, k, alpha, low, high, verbose) {
+    .Call('_TMTI_kFWER_set_C', PACKAGE = 'TMTI', LocalTest, pvals, k, alpha, low, high, verbose)
+}
+
+#' Leading NA
+#'
+#' Computes a the number of hypotheses that can be rejected with FWER control by
+#' using a binary search
+#'
+#'
+#' @param LocalTest A function that returns a double in (0, 1).
+#' @param pvals A vector of p-values.
+#' @param alpha A double indicating the significance level
+#' @param low integer denoting the starting point for the search. Should start at zero.
+#' @param high integer denoting the end point of the search. Should end at pvals.size() - 1.
+#' @param verbose boolean, indicating whether to print progress.
+#' @return The number of hypotheses that can be rejected with kFWER control at a user
+#' specific k.
+FWER_set_C <- function(LocalTest, pvals, alpha, low, high, verbose) {
+    .Call('_TMTI_FWER_set_C', PACKAGE = 'TMTI', LocalTest, pvals, alpha, low, high, verbose)
+}
+

@@ -154,32 +154,14 @@ adjust_LocalTest = function(LocalTest,
         )
       }
     } else if (tolower(direction) == "binary" | tolower(direction) == "b") {
-      low  = 1
-      high = if(AdjustAll) m2 else m2 + 1
-      while (TRUE) {
-        mid = floor((low + high) / 2)
-        p = .f(mid, TRUE)
-        if (p < alpha) {
-          low = mid + 1
-        } else {
-          high = mid
-        }
-        if (verbose)
-          cat(sprintf("\nlow = %i, mid = %i, high = %i", low, mid, high))
-        if (high == low) {
-          if (p < alpha)
-            R = mid + 1
-          else
-            R = mid
-          break
-        } else if (low > high) {
-          R = low
-          break
-        }
-      }
-      if (verbose)
-        cat(sprintf("\rThere are %i hypotheses that can be rejected with FWER control", R - 1))
-      return (R - 1)
+      return(FWER_set_C(
+        LocalTest = LocalTest,
+        pvals = pvals,
+        alpha = alpha,
+        low = 0,
+        high = length(pvals) - 1,
+        verbose = verbose
+      ))
     }
   } else if (any(tolower(parallel.direction) == c("d", "depth"))) {
     .f = function(i, es = EarlyStop) {
@@ -263,7 +245,7 @@ adjust_LocalTest = function(LocalTest,
 
   } else if (any(tolower(parallel.direction) == c("b", "breadth"))) {
     if (any(tolower(direction) == c('b', 'binary')))
-      stop("Binary search only works with parallel.direction == 'breadth'")
+      stop("Binary search only works with parallel.direction == 'depth'")
 
     chunks  = if (any(tolower(direction) == c("i", "increasing")))
       split(seq(m2), ceiling(seq(m2) / chunksize))

@@ -14,6 +14,7 @@ TopDown_LocalTest(
   verbose = FALSE,
   mc.cores = 1L,
   chunksize = 4 * mc.cores,
+  direction = "binary",
   ...
 )
 
@@ -50,6 +51,10 @@ Defaults to TRUE.}
 if setting chunksize = mc.cores, each time a parallel computation is set up,
 each worker will perform only a single task. If mc.cores > chunksize, some
 threads will be inactive.}
+
+\item{direction}{A string indicating whether to perform a binary search ('binary'/'b')
+or decreasing ('decreasing'/'d') search. Defaults to 'binary', which has better
+computational complexity.}
 
 \item{...}{Additional parameters.}
 

@@ -24,6 +24,9 @@
 #' if setting chunksize = mc.cores, each time a parallel computation is set up,
 #' each worker will perform only a single task. If mc.cores > chunksize, some
 #' threads will be inactive.
+#' @param direction A string indicating whether to perform a binary search ('binary'/'b')
+#' or decreasing ('decreasing'/'d') search. Defaults to 'binary', which has better
+#' computational complexity.
 #' @param ... Additional parameters.
 #'
 #' @return A 1-alpha lower bound for the number of false hypotheses among the
@@ -49,6 +52,7 @@ TopDown_TMTI = function(pvals,
                         is.sorted = FALSE,
                         mc.cores = 1L,
                         chunksize = 4 * mc.cores,
+                        direction = 'binary',
                         ...) {
   LocalTest = function (x) {
     TMTI::TMTI(x, tau = tau, K = K, gamma = gammaList[[length(x)]])
@@ -62,6 +66,7 @@ TopDown_TMTI = function(pvals,
     verbose = verbose,
     mc.cores = mc.cores,
     chunksize = chunksize,
+    direction = direction,
     ...
   )
 }

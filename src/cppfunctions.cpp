@@ -122,6 +122,11 @@ double TestSet_C (
   double p;
   double currentMax = 0;
 
+  double p_first = *REAL(LocalTest(pSub));
+  if ((p_first >= alpha) & (EarlyStop)) {
+    return p_first;
+  }
+
   if (verbose) {
     for (int i = 0; i < n; i++) {
       Rcout << "\r" << i + 1 << " of " << n;
@@ -157,7 +162,7 @@ double TestSet_C (
     }
   }
 
-  return currentMax;
+  return std::max(currentMax, p_first);
 }
 
 
@@ -251,7 +256,7 @@ int TopDown_C (Function LocalTest,
   double p;
   for(int i = 0; i < m; i++) {
     p = *REAL(LocalTest(pvals));
-    if (p > alpha) {
+    if (p >= alpha) {
       t_alpha = pvals.size();
       break;
     } else {
@@ -261,3 +266,250 @@ int TopDown_C (Function LocalTest,
 
   return m - t_alpha;
 }
+
+
+//' Leading NA
+//'
+//' Computes a confidence set for the number of false hypotheses among all hypotheses
+//' using a binary search
+//'
+//'
+//' @param LocalTest A function that returns a double in (0, 1).
+//' @param pvals A vector of p-values.
+//' @param alpha A double indicating the significance level
+//' @param low integer denoting the starting point for the search. Should start at zero.
+//' @param high integer denoting the end point of the search. Should end at pvals.size() - 1.
+//' @param verbose boolean, indicating whether to print progress.
+// [[Rcpp::export]]
+int TopDown_C_binary (Function LocalTest,
+                                NumericVector pvals,
+                                double alpha,
+                                int low,
+                                int high,
+                                bool verbose) {
+  int m = pvals.size();
+  double p;
+  int mid;
+  mid = (low + high) / 2;
+
+  p = *REAL(LocalTest(pvals[Range(mid, m - 1)]));
+
+  if (verbose) {
+    Rcout << "low: " << low << "  mid: " << mid << "  high: " << high << "  p: " << p << std::endl;
+  }
+
+  if ((low >= high) & (p < alpha)) {
+    return low + 1;
+  } else if ((low >= high) & (p >= alpha)) {
+    return low;
+  } else if (p < alpha) {
+    return TopDown_C_binary(LocalTest, pvals, alpha, mid + 1, high, verbose);
+  } else {
+    return TopDown_C_binary(LocalTest, pvals, alpha, low, mid, verbose);
+  }
+
+  return -1;
+}
+
+
+//' Leading NA
+//'
+//' Computes a confidence set for the number of false hypotheses among a subset of
+//' using a binary search
+//'
+//'
+//' @param LocalTest A function that returns a double in (0, 1).
+//' @param pSub A vector of p-values from the subset of interest.
+//' @param pRest A vector of the remaining p-values.
+//' @param alpha A double indicating the significance level
+//' @param low integer denoting the starting point for the search. Should start at zero.
+//' @param high integer denoting the end point of the search. Should end at pvals.size() - 1.
+//' @param verbose boolean, indicating whether to print progress.
+// [[Rcpp::export]]
+int TopDown_C_binary_subset (Function LocalTest,
+                             std::vector<double> pSub,
+                             std::vector<double> pRest,
+                             double alpha,
+                             int low,
+                             int high,
+                             bool verbose) {
+  // if (pRest.size() <= 0) {
+  //   stop("Subset equal to the full set of p-values. Use TopDown_C_binary instead");
+  // }
+  int mid;
+  double p;
+  mid = (low + high) / 2;
+
+  std::vector<double> a;
+  std::vector<double> b;
+  a.assign(pSub.begin() + mid, pSub.end());
+  b.insert(b.end(), pSub.begin(), pSub.begin() + mid);
+  b.insert(b.end(), pRest.begin(), pRest.end());
+  std::sort(b.begin(), b.end());
+
+  if (pRest.size() <= 0) {
+    NumericVector tmp;
+    tmp.assign(pSub.begin(), pSub.end());
+    int out = TopDown_C_binary (LocalTest,
+                                tmp,
+                                alpha,
+                                low,
+                                high,
+                                verbose);
+    return out;
+  } else {
+    p = TestSet_C(
+      LocalTest,
+      a,
+      b,
+      alpha,
+      FALSE,
+      TRUE,
+      FALSE
+    );
+  }
+
+
+  if (verbose) {
+    Rcout << "low: " << low << "  mid: " << mid << "  high: " << high << "  p: " << p << std::endl;
+  }
+
+  if ((low >= high) & (p < alpha)) {
+    return low + 1;
+  } else if ((low >= high) & (p >= alpha)) {
+    return low;
+  } else if (p < alpha) {
+    return TopDown_C_binary_subset(LocalTest, pSub, pRest, alpha, mid + 1, high, verbose);
+  } else {
+    return TopDown_C_binary_subset(LocalTest, pSub, pRest, alpha, low, mid, verbose);
+  }
+
+  return -1;
+}
+
+
+//' Leading NA
+//'
+//' Computes a confidence set for the number of false hypotheses among a subset of
+//' using a binary search
+//'
+//'
+//' @param LocalTest A function that returns a double in (0, 1).
+//' @param pvals A vector of p-values.
+//' @param k integer denoting the k to control the kFWER at.
+//' @param alpha A double indicating the significance level
+//' @param low integer denoting the starting point for the search. Should start at zero.
+//' @param high integer denoting the end point of the search. Should end at pvals.size() - 1.
+//' @param verbose boolean, indicating whether to print progress.
+//' @return The number of hypotheses that can be rejected with kFWER control at a user
+//' specific k.
+// [[Rcpp::export]]
+int kFWER_set_C (Function LocalTest,
+                 NumericVector pvals,
+                 int k,
+                 double alpha,
+                 int low,
+                 int high,
+                 bool verbose) {
+  if (k <= 1) {
+    stop("When k = 1, use instead TMTI:::FWER_set_C.");
+  }
+
+  int mid;
+  mid = (low + high) / 2;
+  int k_current;
+
+  std::vector<double> pSub;
+  std::vector<double> pRest;
+  pSub.assign(pvals.begin(), pvals.begin() + mid);
+  pRest.assign(pvals.begin() + mid, pvals.end());
+
+  int n_false = TopDown_C_binary_subset (
+    LocalTest,
+    pSub,
+    pRest,
+    alpha,
+    0,
+    pSub.size() - 1,
+    FALSE
+  );
+  k_current = pSub.size() - n_false + 1;
+
+  if (verbose) {
+    Rcout << "low: " << low << "  mid: " << mid << "  high: " << high << "  current k: " << k_current << std::endl;
+  }
+
+  if (low >= high) {
+    if (k_current < k) {
+      return low;
+    } else if (k_current >= k) {
+      return low - 1;
+    }
+  } else if (k_current < k) {
+    return kFWER_set_C(LocalTest, pvals, k, alpha, mid + 1, high, verbose);
+  } else {
+    return kFWER_set_C(LocalTest, pvals, k, alpha, low, mid, verbose);
+  }
+
+  return -1;
+}
+
+
+//' Leading NA
+//'
+//' Computes a the number of hypotheses that can be rejected with FWER control by
+//' using a binary search
+//'
+//'
+//' @param LocalTest A function that returns a double in (0, 1).
+//' @param pvals A vector of p-values.
+//' @param alpha A double indicating the significance level
+//' @param low integer denoting the starting point for the search. Should start at zero.
+//' @param high integer denoting the end point of the search. Should end at pvals.size() - 1.
+//' @param verbose boolean, indicating whether to print progress.
+//' @return The number of hypotheses that can be rejected with kFWER control at a user
+//' specific k.
+// [[Rcpp::export]]
+int FWER_set_C (Function LocalTest,
+                std::vector<double> pvals,
+                double alpha,
+                int low,
+                int high,
+                bool verbose) {
+  int mid;
+  mid = (low + high) / 2;
+
+  std::vector<double> p_i;
+  p_i.insert(p_i.end(), pvals[mid]);
+  // std::vector<double> b = as<std::vector<double>>(pvals);
+  std::vector<double> b = pvals;
+  // b.assign(pvals.begin(), pvals.end());
+  b.erase(b.begin() + mid);
+
+  double p = TestSet_C(
+    LocalTest,
+    p_i,
+    b,
+    alpha,
+    FALSE,
+    TRUE,
+    FALSE
+  );
+
+  if (verbose) {
+    Rcout << "low: " << low << "  mid: " << mid << "  high: " << high << "  p: " << p << std::endl;
+  }
+
+  if ((low >= high) & (p < alpha)) {
+    return low + 1;
+  } else if ((low >= high) & (p >= alpha)) {
+    return low;
+  } else if (p < alpha) {
+    return FWER_set_C(LocalTest, pvals, alpha, mid + 1, high, verbose);
+  } else {
+    return FWER_set_C(LocalTest, pvals, alpha, low, mid, verbose);
+  }
+
+  return -1;
+}
+

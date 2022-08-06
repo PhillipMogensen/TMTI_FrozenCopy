@@ -18,6 +18,9 @@
 #' if setting chunksize = mc.cores, each time a parallel computation is set up,
 #' each worker will perform only a single task. If mc.cores > chunksize, some
 #' threads will be inactive.
+#' @param direction A string indicating whether to perform a binary search ('binary'/'b')
+#' or decreasing ('decreasing'/'d') search. Defaults to 'binary', which has better
+#' computational complexity.
 #' @param ... Additional parameters.
 #'
 #' @return A 1-alpha bound lower for the number of false hypotheses among the
@@ -37,13 +40,16 @@
 #' }, pvals)
 #'
 TopDown_LocalTest = function(LocalTest,
-                              pvals,
-                              subset = NULL,
-                              alpha = 0.05,
-                              verbose = FALSE,
-                              mc.cores = 1L,
-                              chunksize = 4 * mc.cores,
+                             pvals,
+                             subset = NULL,
+                             alpha = 0.05,
+                             verbose = FALSE,
+                             mc.cores = 1L,
+                             chunksize = 4 * mc.cores,
+                             direction = 'binary',
                               ...) {
+  if (is.unsorted(subset))
+    subset = sort(subset)
   ord = order(pvals)
   pvals = sort(pvals)
   m = length(pvals)
@@ -51,76 +57,153 @@ TopDown_LocalTest = function(LocalTest,
 
   if (!is.null(subset) & length(subset) < length(pvals)) {
     if (mc.cores <= 1L) {
-      counter = 0
-      top = length(subset)
-      for (i in seq_along(subset)) {
-        counter = counter + 1
-        if (verbose) {
-          cat(
-            sprintf(
-              "\rOuter step %i of %i\n", counter, length(subset)
+      if (any(tolower(direction) == c('d', 'decreasing'))) {
+        counter = 0
+        top = length(subset)
+        for (i in seq_along(subset)) {
+          counter = counter + 1
+          if (verbose) {
+            cat(
+              sprintf(
+                "\rOuter step %i of %i\n", counter, length(subset)
+              )
             )
+          }
+          subset2 = subset[i:length(subset)]
+          p_loc = TestSet_LocalTest(
+            LocalTest,
+            pvals,
+            subset2,
+            alpha = alpha,
+            EarlyStop = TRUE,
+            verbose = verbose,
+            mc.cores = mc.cores,
+            ...
           )
+          accept = (p_loc >= alpha)
+          if (accept) {
+            t_alpha = length(subset2)
+            break
+          }
         }
-        subset2 = subset[i:length(subset)]
-        p_loc = TestSet_LocalTest(
-          LocalTest,
-          pvals,
-          subset2,
+        out = top - t_alpha
+      } else if (any(tolower(direction) == c('b', 'binary'))) {
+        return(TopDown_C_binary_subset (
+          LocalTest = LocalTest,
+          pSub = pvals[subset],
+          pRest = pvals[-subset],
           alpha = alpha,
-          EarlyStop = TRUE,
-          verbose = verbose,
-          mc.cores = mc.cores,
-          ...
-        )
-        accept = (p_loc >= alpha)
-        if (accept) {
-          t_alpha = length(subset2)
-          break
-        }
-      }
-      out = top - t_alpha
-    } else {
-      l_sub = length(subset)
-      chunks = split(seq_along(subset), ceiling(seq_along(subset) / chunksize))
-      results = list()
-      counter = 1
-      for (x in chunks) {
-        results[[counter]] = unlist(parallel::mclapply (
-          x,
-          function (i) {
-            TestSet_C (
-              LocalTest = LocalTest,
-              pSub = pvals[subset[i:l_sub]],
-              pRest = pvals[-subset[i:l_sub]],
-              alpha = alpha,
-              is_subset_sequence = FALSE,
-              EarlyStop = TRUE,
-              verbose = FALSE
-            )
-          },
-          mc.cores = mc.cores
+          low = 0,
+          high = length(subset) - 1,
+          verbose = verbose
         ))
-        if (any(unlist(results) > alpha)) {
-          break
-        }
-        counter = counter + 1
       }
-      t_alpha = length(subset) + 1 - which(unlist(results) > alpha)[1]
-      out = length(subset) - t_alpha
+    } else {
+      if (any(tolower(direction) == c('d', 'decreasing'))) {
+        l_sub = length(subset)
+        chunks = split(seq_along(subset), ceiling(seq_along(subset) / chunksize))
+        results = list()
+        counter = 1
+        for (x in chunks) {
+          results[[counter]] = unlist(parallel::mclapply (
+            x,
+            function (i) {
+              TestSet_C (
+                LocalTest = LocalTest,
+                pSub = pvals[subset[i:l_sub]],
+                pRest = pvals[-subset[i:l_sub]],
+                alpha = alpha,
+                is_subset_sequence = FALSE,
+                EarlyStop = TRUE,
+                verbose = FALSE
+              )
+            },
+            mc.cores = mc.cores
+          ))
+          if (any(unlist(results) > alpha)) {
+            break
+          }
+          counter = counter + 1
+        }
+        t_alpha = length(subset) + 1 - which(unlist(results) > alpha)[1]
+        out = length(subset) - t_alpha
+      } else if (any(tolower(direction) == c('b', 'binary'))) {
+        low  = 1
+        high = length(subset)
+        while (TRUE) {
+          mid = floor((low + high) / 2)
+          p = TMTI::TestSet_LocalTest (
+            LocalTest = LocalTest,
+            pvals = pvals,
+            subset = subset[mid:length(subset)],
+            alpha = alpha,
+            EarlyStop = TRUE,
+            verbose = FALSE,
+            mc.cores = mc.cores,
+            is.sorted = TRUE
+          )
+          if (p < alpha) {
+            low = mid + 1
+          } else {
+            high = mid
+          }
+          if (verbose)
+            cat(sprintf("\nlow = %i, mid = %i, high = %i, p = %.2f%%          ",
+                        low, mid, high, p * 100))
+          if (low == length(subset) & mid < low) {
+            pnew = TMTI::TestSet_LocalTest (
+              LocalTest = LocalTest,
+              pvals = pvals,
+              subset = subset[length(subset)],
+              alpha = alpha,
+              EarlyStop = TRUE,
+              verbose = FALSE,
+              mc.cores = mc.cores,
+              is.sorted = TRUE
+            )
+            if (pnew < alpha)
+              R = length(subset) + 1
+          } else if (high == low) {
+            if (p < alpha)
+              R = mid + 1
+            else
+              R = mid
+            break
+          } else if (low > high) {
+            R = low
+            break
+          }
+        }
+        return (R - 1)
+      }
     }
   } else {
     if (mc.cores <= 1L) {
-      out = TopDown_C (
-        LocalTest = LocalTest,
-        pvals = pvals,
-        alpha = alpha
-      )
+      if (any(tolower(direction) == c('d', 'decreasing')))  {
+        out = TopDown_C (
+          LocalTest = LocalTest,
+          pvals = pvals,
+          alpha = alpha
+        )
+      } else if (any(tolower(direction) == c('b', 'binary')))  {
+        return (
+          TopDown_C_binary (
+            LocalTest = LocalTest,
+            pvals = pvals,
+            alpha = alpha,
+            low = 0,
+            high = length(pvals) - 1,
+            verbose = verbose
+          )
+        )
+      }
     } else {
+      if (any(tolower(direction) == c('b', 'binary')))
+        message(
+          "Binary search not supported for mc.cores > 1 when computing CSs among all hypotheses. Reverting to direction = decreasing"
+        )
       .f = function(i) {
-        pvals_tilde = pvals[i:m]
-        p_loc = LocalTest(pvals_tilde)
-        p_loc
+        LocalTest(pvals[i:m])
       }
       chunks = split(seq(m), ceiling(seq(m) / chunksize))
       results = list()
