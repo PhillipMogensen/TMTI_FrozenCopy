@@ -15,7 +15,7 @@ double MakeZ_C(NumericVector pvals, int m) {
   int m_p = pvals.size();
   double currentMin = 1;
   double currentY = 0;
-  for(int i = 0; i < m_p; ++i) {
+  for(int i = 0; i < m_p; i++) {
     currentY = R::pbeta(pvals[i], i + 1, m + 1 - (i + 1), true, false);
     if(currentY < currentMin){
       currentMin = currentY;
@@ -37,7 +37,7 @@ double MakeZ_C(NumericVector pvals, int m) {
 NumericVector MakeY_C(NumericVector pvals, int m) {
   int m_p = pvals.size();
   NumericVector Y(m_p);
-  for(int i = 0; i < m_p; ++i) {
+  for(int i = 0; i < m_p; i++) {
     Y[i] = R::pbeta(pvals[i], i + 1, m + 1 - (i + 1), true, false);
   }
   return Y;
