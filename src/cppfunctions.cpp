@@ -481,9 +481,7 @@ int FWER_set_C (Function LocalTest,
 
   std::vector<double> p_i;
   p_i.insert(p_i.end(), pvals[mid]);
-  // std::vector<double> b = as<std::vector<double>>(pvals);
   std::vector<double> b = pvals;
-  // b.assign(pvals.begin(), pvals.end());
   b.erase(b.begin() + mid);
 
   double p = TestSet_C(
